@@ -5,19 +5,68 @@ using System;
 
 namespace mg_pong;
 
+class Ball {
+    private Rectangle rec;
+    public Rectangle Rec { get { return rec; } }
+
+    private Vector2 direction;
+    public Vector2 Direction { 
+        get
+        {
+            return direction;
+        }
+
+        set 
+        {
+            direction = value;
+            direction.Normalize();
+        }
+    }
+
+    public float X { get { return rec.X; } set { rec.X = (int)value; } }
+    public float Y { get { return rec.Y; } set { rec.Y = (int)value; } }
+
+    public float DirectionX {
+        get { return direction.X; } 
+        set { 
+            direction.X = value; 
+            direction.Normalize();
+        } 
+    }
+    public float DirectionY {
+        get { return direction.Y; } 
+        set { 
+            direction.Y = value; 
+            direction.Normalize();
+        }
+    }
+
+    public float Speed { get; set; }
+    public float MaxSpeed { get; set; }
+
+    public Ball() {
+        rec = new Rectangle(0, 0, 10, 10);
+        Direction = new Vector2(0.1f, 1f);
+        Speed = 10.0f;
+        MaxSpeed = 15f;
+    }
+
+    public void Move() {
+        rec.X += (int)(Direction.X * Speed);
+        rec.Y += (int)(Direction.Y * Speed);
+    }
+}
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Point GameBounds = new Point(450, 800); //window resolution
 
-    private Rectangle PaddleLeft;
-    private Rectangle PaddleRight;
+    private Rectangle PaddleTop;
+    private Rectangle PaddleBottom;
 
-    private Rectangle Ball;
-    private Vector2 BallVelocity;
-    private Vector2 BallPosition;
-    private float BallSpeed = 15.0f;
+    private Ball ball;
 
     public Texture2D Texture;
     private Color BackgroundColor = Color.Black;
@@ -25,8 +74,8 @@ public class Game1 : Game
     private Random Rand = new Random();
     private byte HitCounter = 0;
 
-    private int PointsLeft;
-    private int PointsRight;
+    private int PointsTop;
+    private int PointsBottom;
     private int PointsPerGame = 4;
 
     private AudioSource SoundFX;
@@ -55,64 +104,62 @@ public class Game1 : Game
 #endif
         #region Update Ball
 
-        //limit how fast ball can move each frame
-        float maxVelocity = 1.5f;
-        if (BallVelocity.X > maxVelocity) { BallVelocity.X = maxVelocity; }
-        else if (BallVelocity.X < -maxVelocity) { BallVelocity.X = -maxVelocity; }
-        if (BallVelocity.Y > maxVelocity) { BallVelocity.Y = maxVelocity; }
-        else if (BallVelocity.Y < -maxVelocity) { BallVelocity.Y = -maxVelocity; }
-
-        //apply velocity to position
-        BallPosition.X += BallVelocity.X * BallSpeed;
-        BallPosition.Y += BallVelocity.Y * BallSpeed;
+        ball.Move();
 
         //check for collision with paddles
         HitCounter++;
         if (HitCounter > 10)
         {
-            if (PaddleLeft.Intersects(Ball))
+            if (PaddleTop.Intersects(ball.Rec))
             {
-                BallVelocity.X *= -1;
-                BallVelocity.Y *= -1.1f;
+                int Paddle_Center = PaddleTop.X + PaddleTop.Width / 2;
+                ball.Direction = new Vector2(
+                    (ball.X - Paddle_Center) / (PaddleTop.Width / 2),
+                    ball.Direction.Y * -1.1f
+                );
+
                 HitCounter = 0;
-                BallPosition.Y = PaddleLeft.Y + PaddleLeft.Height;
+                ball.Y = PaddleTop.Y + PaddleTop.Height;
                 SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
             }
-            if (PaddleRight.Intersects(Ball))
+            if (PaddleBottom.Intersects(ball.Rec))
             {
-                BallVelocity.X *= -1;
-                BallVelocity.Y *= -1.1f;
+                int Paddle_Center = PaddleBottom.X + PaddleBottom.Width / 2;
+                ball.Direction = new Vector2(
+                    (ball.X - Paddle_Center) / (PaddleBottom.Width / 2),
+                    ball.Direction.Y * -1.1f
+                );
                 HitCounter = 0;
-                BallPosition.Y = PaddleRight.Y - 10;
+                ball.Y = PaddleBottom.Y - 10;
                 SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
             }
         }
 
         //bounce on screen
-        if (BallPosition.X < 0) //point for right
+        if (ball.Y < 0) //point for right
         {
-            BallPosition.X = 1;
-            BallVelocity.X *= -1;
-            PointsRight++;
+            ball.Y = 1;
+            ball.DirectionY *= -1;
+            PointsBottom++;
             SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
         }
-        else if (BallPosition.X > GameBounds.X) //point for left
+        else if (ball.Y > GameBounds.Y) //point for left
         {
-            BallPosition.X = GameBounds.X - 1;
-            BallVelocity.X *= -1;
-            PointsLeft++;
+            ball.Y = GameBounds.Y - 1;
+            ball.DirectionY *= -1;
+            PointsTop++;
             SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
         }
 
-        if (BallPosition.Y < 0 + 10) //limit to minimum Y pos
+        if (ball.X < 0 + 10) //limit to minimum Y pos
         {
-            BallPosition.Y = 10 + 1;
-            BallVelocity.Y *= -(1 + Rand.Next(-100, 101) * 0.005f);
+            ball.X = 10 + 1;
+            ball.DirectionX *= -(1 + Rand.Next(-100, 101) * 0.005f);
         }
-        else if (BallPosition.Y > GameBounds.Y - 10) //limit to maximum Y pos
+        else if (ball.X > GameBounds.X - 10) //limit to maximum Y pos
         {
-            BallPosition.Y = GameBounds.Y - 11;
-            BallVelocity.Y *= -(1 + Rand.Next(-100, 101) * 0.005f);
+            ball.X = GameBounds.X - 11;
+            ball.DirectionX *= -(1 + Rand.Next(-100, 101) * 0.005f);
         }
 
         #endregion
@@ -120,28 +167,28 @@ public class Game1 : Game
         #region Simulate Left Paddle Input
         {   //simple ai, not very good, moves random amount each frame
             int amount = Rand.Next(0, 6);
-            int Paddle_Center = PaddleLeft.X + PaddleLeft.Width / 2;
-            if (Paddle_Center < BallPosition.X - 20) { PaddleLeft.X += amount; }
-            else if (Paddle_Center > BallPosition.X + 20) { PaddleLeft.X -= amount; }
-            LimitPaddle(ref PaddleLeft);
+            int Paddle_Center = PaddleTop.X + PaddleTop.Width / 2;
+            if (Paddle_Center < ball.X - 20) { PaddleTop.X += amount; }
+            else if (Paddle_Center > ball.X + 20) { PaddleTop.X -= amount; }
+            LimitPaddle(ref PaddleTop);
         }
         #endregion Simulate Left Paddle Input
 
         #region Simulate Right Paddle Input
         {   //simple ai, better than left, moves % each frame
-            int Paddle_Center = PaddleRight.X + PaddleRight.Width / 2;
-            if (Paddle_Center < BallPosition.X - 20)
-            { PaddleRight.X -= (int)((Paddle_Center - BallPosition.X) * 0.08f); }
-            else if (Paddle_Center > BallPosition.X + 20)
-            { PaddleRight.X += (int)((BallPosition.X - Paddle_Center) * 0.08f); }
-            LimitPaddle(ref PaddleRight);
+            int Paddle_Center = PaddleBottom.X + PaddleBottom.Width / 2;
+            if (Paddle_Center < ball.X - 20)
+            { PaddleBottom.X -= (int)((Paddle_Center - ball.X) * 0.08f); }
+            else if (Paddle_Center > ball.X + 20)
+            { PaddleBottom.X += (int)((ball.X - Paddle_Center) * 0.08f); }
+            LimitPaddle(ref PaddleBottom);
         }
         #endregion Simulate Right Paddle Input
 
         #region Check Win
         //Check for win condition, reset
-        if (PointsLeft >= PointsPerGame) { Reset(); }
-        else if (PointsRight >= PointsPerGame) { Reset(); }
+        if (PointsTop >= PointsPerGame) { Reset(); }
+        else if (PointsBottom >= PointsPerGame) { Reset(); }
         #endregion Check Win
 
         #region Play Reset Jingle
@@ -174,20 +221,18 @@ public class Game1 : Game
         }
 
         //draw paddles
-        DrawRectangle(_spriteBatch, PaddleLeft, Color.White);
-        DrawRectangle(_spriteBatch, PaddleRight, Color.White);
+        DrawRectangle(_spriteBatch, PaddleTop, Color.White);
+        DrawRectangle(_spriteBatch, PaddleBottom, Color.White);
 
         //draw ball
-        Ball.X = (int)BallPosition.X;
-        Ball.Y = (int)BallPosition.Y;
-        DrawRectangle(_spriteBatch, Ball, Color.White);
+        DrawRectangle(_spriteBatch, ball.Rec, Color.White);
 
         //draw current game points
-        for (int i = 0; i < PointsLeft; i++)
+        for (int i = 0; i < PointsTop; i++)
         {
             DrawRectangle(_spriteBatch, new Rectangle((GameBounds.X / 2 - 25) - i * 12, 10, 10, 10), Color.White * 1.0f);
         }
-        for (int i = 0; i < PointsRight; i++)
+        for (int i = 0; i < PointsBottom; i++)
         {
             DrawRectangle(_spriteBatch, new Rectangle((GameBounds.X / 2 + 15) + i * 12, 10, 10, 10), Color.White * 1.0f);
         }
@@ -223,14 +268,14 @@ public class Game1 : Game
         }
 
         int PaddleWidth = 60;
-        PaddleLeft = new Rectangle(150, 0 + 10, PaddleWidth, 20);
-        PaddleRight = new Rectangle(150, GameBounds.Y - 30, PaddleWidth, 20);
+        PaddleTop = new Rectangle(150, 0 + 10, PaddleWidth, 20);
+        PaddleBottom = new Rectangle(150, GameBounds.Y - 30, PaddleWidth, 20);
 
-        BallPosition = new Vector2(GameBounds.X / 2, 200);
-        Ball = new Rectangle((int)BallPosition.X, (int)BallPosition.Y, 10, 10);
-        BallVelocity = new Vector2(0.1f, 1f);
+        ball = new Ball();
+        ball.X = GameBounds.X / 2;
+        ball.Y = GameBounds.Y / 200;
 
-        PointsLeft = 0; PointsRight = 0;
+        PointsTop = 0; PointsBottom = 0;
         JingleCounter = 0;
 
         //setup sound sources
