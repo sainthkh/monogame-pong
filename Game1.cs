@@ -174,16 +174,18 @@ public class Game1 : Game
         }
         #endregion Simulate Left Paddle Input
 
-        #region Simulate Right Paddle Input
-        {   //simple ai, better than left, moves % each frame
-            int Paddle_Center = PaddleBottom.X + PaddleBottom.Width / 2;
-            if (Paddle_Center < ball.X - 20)
-            { PaddleBottom.X -= (int)((Paddle_Center - ball.X) * 0.08f); }
-            else if (Paddle_Center > ball.X + 20)
-            { PaddleBottom.X += (int)((ball.X - Paddle_Center) * 0.08f); }
+        #region Handle Player Paddle Input
+        {
+            KeyboardState state = Keyboard.GetState();
+
+            if (state.IsKeyDown(Keys.Left))
+            { PaddleBottom.X -= 5; }
+            else if (state.IsKeyDown(Keys.Right))
+            { PaddleBottom.X += 5; }
+
             LimitPaddle(ref PaddleBottom);
         }
-        #endregion Simulate Right Paddle Input
+        #endregion
 
         #region Check Win
         //Check for win condition, reset
