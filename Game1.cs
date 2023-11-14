@@ -74,6 +74,7 @@ public class Game1 : Game
     private Random Rand = new Random();
     private byte HitCounter = 0;
 
+    private SpriteFont font;
     private int PointsTop;
     private int PointsBottom;
     private int PointsPerGame = 4;
@@ -92,6 +93,7 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
+        font = Content.Load<SpriteFont>("Content/Score");
 
         Reset();
     }
@@ -164,15 +166,15 @@ public class Game1 : Game
 
         #endregion
 
-        #region Simulate Left Paddle Input
-        {   //simple ai, not very good, moves random amount each frame
+        #region AI Player Movement
+        {   
             int amount = Rand.Next(0, 6);
             int Paddle_Center = PaddleTop.X + PaddleTop.Width / 2;
             if (Paddle_Center < ball.X - 20) { PaddleTop.X += amount; }
             else if (Paddle_Center > ball.X + 20) { PaddleTop.X -= amount; }
             LimitPaddle(ref PaddleTop);
         }
-        #endregion Simulate Left Paddle Input
+        #endregion
 
         #region Handle Player Paddle Input
         {
@@ -229,15 +231,8 @@ public class Game1 : Game
         //draw ball
         DrawRectangle(_spriteBatch, ball.Rec, Color.White);
 
-        //draw current game points
-        for (int i = 0; i < PointsTop; i++)
-        {
-            DrawRectangle(_spriteBatch, new Rectangle((GameBounds.X / 2 - 25) - i * 12, 10, 10, 10), Color.White * 1.0f);
-        }
-        for (int i = 0; i < PointsBottom; i++)
-        {
-            DrawRectangle(_spriteBatch, new Rectangle((GameBounds.X / 2 + 15) + i * 12, 10, 10, 10), Color.White * 1.0f);
-        }
+        _spriteBatch.DrawString(font, PointsTop.ToString(), new Vector2(GameBounds.X - 25, GameBounds.Y / 2 - 40), Color.White);
+        _spriteBatch.DrawString(font, PointsBottom.ToString(), new Vector2(15, GameBounds.Y / 2 + 20), Color.White);
 
         _spriteBatch.End();
 
