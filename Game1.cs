@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace mg_pong;
 
@@ -57,6 +58,22 @@ class Ball {
     }
 }
 
+class Brick {
+    private Rectangle rec;
+    public Rectangle Rec { get { return rec; } }
+    public Color Color { get; set; }
+    public bool IsAlive { get; set; }
+
+    public Brick(int x, int y, int width) {
+        rec = new Rectangle(x, y, width, 15);
+        IsAlive = true;
+    }
+
+    public bool Collides(Ball ball) {
+        return rec.Intersects(ball.Rec);
+    }
+}
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -67,6 +84,8 @@ public class Game1 : Game
     private Rectangle PaddleBottom;
 
     private Ball ball;
+
+    private List<Brick> bricks = new List<Brick>();
 
     public Texture2D Texture;
     private Color BackgroundColor = Color.Black;
@@ -133,6 +152,17 @@ public class Game1 : Game
                 );
                 HitCounter = 0;
                 ball.Y = PaddleBottom.Y - 10;
+                SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
+            }
+        }
+
+        // check for collision with bricks
+        foreach (Brick brick in bricks)
+        {
+            if (brick.IsAlive && brick.Collides(ball))
+            {
+                brick.IsAlive = false;
+                ball.DirectionY *= -1;
                 SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
             }
         }
@@ -228,6 +258,15 @@ public class Game1 : Game
         DrawRectangle(_spriteBatch, PaddleTop, Color.White);
         DrawRectangle(_spriteBatch, PaddleBottom, Color.White);
 
+        // draw bricks
+        foreach (Brick brick in bricks)
+        {
+            if (brick.IsAlive)
+            {
+                DrawRectangle(_spriteBatch, brick.Rec, brick.Color);
+            }
+        }
+
         //draw ball
         DrawRectangle(_spriteBatch, ball.Rec, Color.White);
 
@@ -265,15 +304,32 @@ public class Game1 : Game
         }
 
         int PaddleWidth = 60;
-        PaddleTop = new Rectangle(150, 0 + 10, PaddleWidth, 20);
-        PaddleBottom = new Rectangle(150, GameBounds.Y - 30, PaddleWidth, 20);
+        PaddleTop = new Rectangle(150, 0 + 50, PaddleWidth, 20);
+        PaddleBottom = new Rectangle(150, GameBounds.Y - 80, PaddleWidth, 20);
 
         ball = new Ball();
         ball.X = GameBounds.X / 2;
-        ball.Y = GameBounds.Y / 200;
+        ball.Y = GameBounds.Y / 2;
 
         PointsTop = 0; PointsBottom = 0;
         JingleCounter = 0;
+
+        int bricksPerRow = 6;
+        int brickWidth = GameBounds.X / bricksPerRow;
+
+        for (int i = 0; i < bricksPerRow; i++)
+        {
+            Brick brick = new Brick(i * brickWidth, 5, brickWidth);
+            brick.Color = i % 2 == 0 ? Color.DarkGray : Color.Gray;
+            bricks.Add(brick);
+        }
+
+        for (int i = 0; i < bricksPerRow; i++)
+        {
+            Brick brick = new Brick(i * brickWidth, GameBounds.Y - 20, brickWidth);
+            brick.Color = i % 2 == 1 ? Color.DarkGray : Color.Gray;
+            bricks.Add(brick);
+        }
 
         //setup sound sources
         if (SoundFX == null)
