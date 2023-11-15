@@ -79,6 +79,7 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Point GameBounds = new Point(450, 800); //window resolution
+    private bool GameEnded = false;
 
     private Rectangle PaddleTop;
     private Rectangle PaddleBottom;
@@ -94,9 +95,9 @@ public class Game1 : Game
     private byte HitCounter = 0;
 
     private SpriteFont font;
-    private int PointsTop;
-    private int PointsBottom;
-    private int PointsPerGame = 4;
+    private int PointsEnemy;
+    private int PointsPlayer;
+    private int PointsPerGame = 7;
 
     private AudioSource SoundFX;
     private int JingleCounter = 0;
@@ -119,6 +120,10 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
+        if (GameEnded) {
+            return;
+        }
+
 #if !__IOS__
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
@@ -172,14 +177,14 @@ public class Game1 : Game
         {
             ball.Y = 1;
             ball.DirectionY *= -1;
-            PointsBottom++;
+            PointsPlayer++;
             SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
         }
         else if (ball.Y > GameBounds.Y) //point for left
         {
             ball.Y = GameBounds.Y - 1;
             ball.DirectionY *= -1;
-            PointsTop++;
+            PointsEnemy++;
             SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
         }
 
@@ -221,8 +226,10 @@ public class Game1 : Game
 
         #region Check Win
         //Check for win condition, reset
-        if (PointsTop >= PointsPerGame) { Reset(); }
-        else if (PointsBottom >= PointsPerGame) { Reset(); }
+        if (PointsEnemy >= PointsPerGame || PointsPlayer >= PointsPerGame)
+        {
+            GameEnded = true;
+        }
         #endregion Check Win
 
         #region Play Reset Jingle
@@ -270,8 +277,19 @@ public class Game1 : Game
         //draw ball
         DrawRectangle(_spriteBatch, ball.Rec, Color.White);
 
-        _spriteBatch.DrawString(font, PointsTop.ToString(), new Vector2(GameBounds.X - 25, GameBounds.Y / 2 - 40), Color.White);
-        _spriteBatch.DrawString(font, PointsBottom.ToString(), new Vector2(15, GameBounds.Y / 2 + 20), Color.White);
+        _spriteBatch.DrawString(font, PointsEnemy.ToString(), new Vector2(GameBounds.X - 25, GameBounds.Y / 2 - 40), Color.White);
+        _spriteBatch.DrawString(font, PointsPlayer.ToString(), new Vector2(15, GameBounds.Y / 2 + 20), Color.White);
+
+        if (GameEnded)
+        {
+            bool playerWon = PointsPlayer > PointsEnemy;
+            Color bgColor = playerWon ? Color.Blue : Color.Red;
+
+            DrawRectangle(_spriteBatch, new Rectangle(0, 0, GameBounds.X, GameBounds.Y), bgColor * 0.8f);
+
+            string text = playerWon ? "You Win!" : "You Lose!";
+            _spriteBatch.DrawString(font, text, new Vector2(GameBounds.X / 2 - 50, GameBounds.Y / 2 - 20), Color.White);
+        }
 
         _spriteBatch.End();
 
@@ -311,7 +329,7 @@ public class Game1 : Game
         ball.X = GameBounds.X / 2;
         ball.Y = GameBounds.Y / 2;
 
-        PointsTop = 0; PointsBottom = 0;
+        PointsEnemy = 0; PointsPlayer = 0;
         JingleCounter = 0;
 
         int bricksPerRow = 6;
