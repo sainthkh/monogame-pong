@@ -74,6 +74,19 @@ class Brick {
     }
 }
 
+class Button {
+    private Rectangle rec;
+    public Rectangle Rec { get { return rec; } }
+    public Color Background { get; set; }
+    public Color Color { get; set; }
+    public String Text { get; set; }
+
+    public Button(Rectangle rec, String text) {
+        this.rec = rec;
+        Text = text;
+    }
+}
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -95,6 +108,8 @@ public class Game1 : Game
     private byte HitCounter = 0;
 
     private SpriteFont font;
+    private SpriteFont resultMessageFont;
+    private SpriteFont buttonFont;
     private int PointsEnemy;
     private int PointsPlayer;
     private int PointsPerGame = 7;
@@ -114,6 +129,8 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         font = Content.Load<SpriteFont>("Content/Score");
+        resultMessageFont = Content.Load<SpriteFont>("Content/GameResult");
+        buttonFont = Content.Load<SpriteFont>("Content/ButtonText");
 
         Reset();
     }
@@ -288,7 +305,28 @@ public class Game1 : Game
             DrawRectangle(_spriteBatch, new Rectangle(0, 0, GameBounds.X, GameBounds.Y), bgColor * 0.8f);
 
             string text = playerWon ? "You Win!" : "You Lose!";
-            _spriteBatch.DrawString(font, text, new Vector2(GameBounds.X / 2 - 50, GameBounds.Y / 2 - 20), Color.White);
+            _spriteBatch.DrawString(resultMessageFont, text, new Vector2(GameBounds.X / 2 - 120, GameBounds.Y / 2 - 180), Color.White);
+
+            Button button = new Button(new Rectangle(GameBounds.X / 2 - 95, GameBounds.Y / 2 - 100, 200, 50), "Play Again");
+
+            if (button.Rec.Contains(Mouse.GetState().Position))
+            {
+                button.Background = Color.DarkGray;
+                button.Color = Color.White;
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                {
+                    Reset();
+                    GameEnded = false;
+                }
+            }
+            else
+            {
+                button.Background = Color.White;
+                button.Color = Color.Black;
+            }
+
+            DrawRectangle(_spriteBatch, button.Rec, button.Background);
+            _spriteBatch.DrawString(buttonFont, button.Text, new Vector2(button.Rec.X + 50, button.Rec.Y + 15), button.Color);
         }
 
         _spriteBatch.End();
