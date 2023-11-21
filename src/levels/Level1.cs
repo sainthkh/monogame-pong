@@ -203,9 +203,9 @@ public class Level1: Scene {
             DrawRectangle(_spriteBatch, new Rectangle(0, 0, GameBounds.X, GameBounds.Y), bgColor * 0.8f);
 
             string text = playerWon ? "You Win!" : "You Lose!";
-            _spriteBatch.DrawString(resultMessageFont, text, new Vector2(GameBounds.X / 2 - 120, GameBounds.Y / 2 - 180), Color.White);
+            DrawTextCenter(_spriteBatch, text, resultMessageFont, GameBounds.Y / 2 - 180, Color.White);
 
-            Button button = new Button(new Rectangle(GameBounds.X / 2 - 95, GameBounds.Y / 2 - 100, 200, 50), "Play Again");
+            Button button = new Button(new Rectangle(GameBounds.X / 2 - 100, GameBounds.Y / 2 - 100, 200, 50), "Play Again");
 
             if (button.Rec.Contains(Mouse.GetState().Position))
             {
@@ -239,11 +239,10 @@ public class Level1: Scene {
             SpriteEffects.None, 0.00001f);
     }
 
-    private void LimitPaddle(ref Rectangle Paddle)
+    private void DrawTextCenter(SpriteBatch sb, string text, SpriteFont font, int y, Color color)
     {
-        //limit how far paddles can travel on Y axis so they dont exceed top or bottom
-        if (Paddle.X < 10) { Paddle.X = 10; }
-        else if (Paddle.X + Paddle.Width > SharedResource.GameBounds.X - 10)
-        { Paddle.X = SharedResource.GameBounds.X - 10 - Paddle.Width; }
+        Vector2 size = font.MeasureString(text);
+        Vector2 pos = new Vector2(SharedResource.GameBounds.X / 2 - size.X / 2, y);
+        sb.DrawString(font, text, pos, color);
     }
 }
