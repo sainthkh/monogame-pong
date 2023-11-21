@@ -9,8 +9,8 @@ namespace mg_pong;
 public class Level1: Scene {
     private bool GameEnded = false;
 
-    private Rectangle PaddleTop;
-    private Rectangle PaddleBottom;
+    private PaddleEnemy enemy;
+    private PaddlePlayer player;
 
     private Ball ball;
 
@@ -27,13 +27,13 @@ public class Level1: Scene {
     public override void Load() {
         Point GameBounds = SharedResource.GameBounds;
 
-        int PaddleWidth = 60;
-        PaddleTop = new Rectangle(150, 0 + 50, PaddleWidth, 20);
-        PaddleBottom = new Rectangle(150, GameBounds.Y - 80, PaddleWidth, 20);
-
         ball = new Ball();
         ball.X = GameBounds.X / 2;
         ball.Y = GameBounds.Y / 2;
+
+        enemy = new PaddleEnemy();
+        enemy.Ball = ball;
+        player = new PaddlePlayer();
 
         PointsEnemy = 0; PointsPlayer = 0;
         JingleCounter = 0;
@@ -69,25 +69,25 @@ public class Level1: Scene {
         ball.Move();
 
         //check for collision with paddles
-        if (PaddleTop.Intersects(ball.Rec))
+        if (enemy.Collides(ball))
         {
-            int Paddle_Center = PaddleTop.X + PaddleTop.Width / 2;
+            int Paddle_Center = enemy.X + enemy.Width / 2;
             ball.Direction = new Vector2(
-                (ball.X - Paddle_Center) / (PaddleTop.Width / 2),
+                (ball.X - Paddle_Center) / (enemy.Width / 2),
                 ball.Direction.Y * -1.1f
             );
 
-            ball.Y = PaddleTop.Y + PaddleTop.Height;
+            ball.Y = enemy.Y + enemy.Height;
             SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
         }
-        if (PaddleBottom.Intersects(ball.Rec))
+        if (player.Collides(ball))
         {
-            int Paddle_Center = PaddleBottom.X + PaddleBottom.Width / 2;
+            int Paddle_Center = player.X + player.Width / 2;
             ball.Direction = new Vector2(
-                (ball.X - Paddle_Center) / (PaddleBottom.Width / 2),
+                (ball.X - Paddle_Center) / (player.Width / 2),
                 ball.Direction.Y * -1.1f
             );
-            ball.Y = PaddleBottom.Y - 10;
+            ball.Y = player.Y - 10;
             SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
         }
 
@@ -99,6 +99,8 @@ public class Level1: Scene {
                 brick.IsAlive = false;
                 ball.DirectionY *= -1;
                 SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
+
+                break;
             }
         }
 
@@ -131,28 +133,8 @@ public class Level1: Scene {
 
         #endregion
 
-        #region AI Player Movement
-        {   
-            int amount = Rand.Next(0, 6);
-            int Paddle_Center = PaddleTop.X + PaddleTop.Width / 2;
-            if (Paddle_Center < ball.X - 20) { PaddleTop.X += amount; }
-            else if (Paddle_Center > ball.X + 20) { PaddleTop.X -= amount; }
-            LimitPaddle(ref PaddleTop);
-        }
-        #endregion
-
-        #region Handle Player Paddle Input
-        {
-            KeyboardState state = Keyboard.GetState();
-
-            if (state.IsKeyDown(Keys.Left))
-            { PaddleBottom.X -= 5; }
-            else if (state.IsKeyDown(Keys.Right))
-            { PaddleBottom.X += 5; }
-
-            LimitPaddle(ref PaddleBottom);
-        }
-        #endregion
+        enemy.Control();
+        player.Control();
 
         #region Check Win
         //Check for win condition, reset
@@ -195,8 +177,8 @@ public class Level1: Scene {
         }
 
         //draw paddles
-        DrawRectangle(_spriteBatch, PaddleTop, Color.White);
-        DrawRectangle(_spriteBatch, PaddleBottom, Color.White);
+        DrawRectangle(_spriteBatch, enemy.Rec, Color.White);
+        DrawRectangle(_spriteBatch, player.Rec, Color.White);
 
         // draw bricks
         foreach (Brick brick in bricks)
