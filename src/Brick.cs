@@ -8,8 +8,8 @@ class Brick {
     public Color Color { get; set; }
     public bool IsAlive { get; set; }
 
-    public Brick(int x, int y, int width) {
-        rec = new Rectangle(x, y, width, 15);
+    public Brick(int x, int y, int width, int height = 15) {
+        rec = new Rectangle(x, y, width, height);
         IsAlive = true;
     }
 
