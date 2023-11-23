@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 
 namespace mg_pong;
 
-class Brick {
+public class Brick {
     private Rectangle rec;
     public Rectangle Rec { get { return rec; } }
     public Color Color { get; set; }
