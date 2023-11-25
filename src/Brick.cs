@@ -16,4 +16,10 @@ public class Brick {
     public bool Collides(Ball ball) {
         return rec.Intersects(ball.Rec);
     }
+
+    public virtual void Update(GameTime gameTime) { }
+
+    public virtual void OnHit(Ball ball) {
+        IsAlive = false;
+    }
 }

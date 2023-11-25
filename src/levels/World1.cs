@@ -69,6 +69,11 @@ public class World1: Scene {
         #region Update Ball
 
         ball.Move();
+        
+        foreach (Brick brick in bricks)
+        {
+            brick.Update(gameTime);
+        }
 
         //check for collision with paddles
         if (enemy.Collides(ball))
@@ -98,7 +103,7 @@ public class World1: Scene {
         {
             if (brick.IsAlive && brick.Collides(ball))
             {
-                brick.IsAlive = false;
+                brick.OnHit(ball);
                 ball.DirectionY *= -1;
                 SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
 
