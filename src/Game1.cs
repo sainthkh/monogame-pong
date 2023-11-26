@@ -23,7 +23,7 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = GameBounds.X;
         _graphics.PreferredBackBufferHeight = GameBounds.Y;
         IsMouseVisible = true;
-        currentScene = new Level3();
+        currentScene = new Level4();
     }
 
     protected override void LoadContent()
