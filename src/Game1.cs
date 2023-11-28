@@ -15,8 +15,6 @@ public class Game1 : Game
     private SpriteFont resultMessageFont;
     private SpriteFont buttonFont;
 
-    private Scene currentScene;
-
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);

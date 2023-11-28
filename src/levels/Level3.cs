@@ -49,4 +49,9 @@ public class Level3: World1 {
             brickIndex++;
         }
     }
+
+    public override void OnClickNextLevel()
+    {
+        SceneManager.LoadLevel(4);
+    }
 }

@@ -22,4 +22,9 @@ public class Level4: World1 {
             bricks.Add(brick);
         }
     }
+
+    public override void OnClickNextLevel()
+    {
+        SceneManager.LoadLevel(5);
+    }
 }

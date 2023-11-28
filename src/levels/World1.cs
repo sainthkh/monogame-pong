@@ -25,6 +25,7 @@ public class World1: Scene {
     private int JingleCounter = 0;
 
     private Button playAgainButton;
+    private Button nextLevelButton;
 
     public override void Load() {
         Point GameBounds = SharedResource.GameBounds;
@@ -67,7 +68,14 @@ public class World1: Scene {
             GameEnded = false;
         };
 
+        nextLevelButton = new Button(new Rectangle(GameBounds.X / 2 - 100, GameBounds.Y / 2, 200, 50), "Next");
+        nextLevelButton.Click += () => {
+            OnClickNextLevel();
+        };
     }
+
+    public virtual void OnClickNextLevel() {}
+
     public override void Update(GameTime gameTime) {
         AudioSource SoundFX = SharedResource.SoundFX;
         Point GameBounds = SharedResource.GameBounds;
@@ -224,6 +232,11 @@ public class World1: Scene {
             DrawTextCenter(_spriteBatch, text, resultMessageFont, GameBounds.Y / 2 - 180, Color.White);
 
             playAgainButton.Draw();
+
+            if (playerWon)
+            {
+                nextLevelButton.Draw();
+            }
         }
 
         _spriteBatch.End();
