@@ -14,7 +14,7 @@ public class World1: Scene {
 
     private Ball ball;
 
-    protected List<Brick> bricks = new List<Brick>();
+    protected List<Brick> bricks;
 
     private Color BackgroundColor = Color.Black;
 
@@ -37,6 +37,8 @@ public class World1: Scene {
 
         PointsEnemy = 0; PointsPlayer = 0;
         JingleCounter = 0;
+
+        bricks = new List<Brick>();
 
         int bricksPerRow = 6;
         int brickWidth = GameBounds.X / bricksPerRow;
@@ -220,7 +222,7 @@ public class World1: Scene {
                 button.Color = Color.White;
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
-                    // Reset();
+                    Load();
                     GameEnded = false;
                 }
             }
