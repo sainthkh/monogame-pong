@@ -23,7 +23,7 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = GameBounds.X;
         _graphics.PreferredBackBufferHeight = GameBounds.Y;
         IsMouseVisible = true;
-        currentScene = new Level4();
+        SceneManager.LoadLevel(1);
     }
 
     protected override void LoadContent()
@@ -47,20 +47,20 @@ public class Game1 : Game
         SharedResource.ResultMessageFont = resultMessageFont;
         SharedResource.ButtonFont = buttonFont;
 
-        currentScene.Load();
+        SceneManager.CurrentScene.Load();
     }
 
     protected override void Update(GameTime gameTime)
     {
-        currentScene.Update(gameTime);
-
         base.Update(gameTime);
+
+        SceneManager.CurrentScene.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        currentScene.Draw(gameTime);
-
         base.Draw(gameTime);
+
+        SceneManager.CurrentScene.Draw(gameTime);
     }
 }
