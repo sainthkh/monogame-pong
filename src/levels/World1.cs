@@ -24,6 +24,8 @@ public class World1: Scene {
 
     private int JingleCounter = 0;
 
+    private Button playAgainButton;
+
     public override void Load() {
         Point GameBounds = SharedResource.GameBounds;
 
@@ -58,6 +60,13 @@ public class World1: Scene {
         }
 
         AddMoreBlocks();
+
+        playAgainButton = new Button(new Rectangle(GameBounds.X / 2 - 100, GameBounds.Y / 2 - 100, 200, 50), "Play Again");
+        playAgainButton.Click += () => {
+            Load();
+            GameEnded = false;
+        };
+
     }
     public override void Update(GameTime gameTime) {
         AudioSource SoundFX = SharedResource.SoundFX;
@@ -214,26 +223,7 @@ public class World1: Scene {
             string text = playerWon ? "You Win!" : "You Lose!";
             DrawTextCenter(_spriteBatch, text, resultMessageFont, GameBounds.Y / 2 - 180, Color.White);
 
-            Button button = new Button(new Rectangle(GameBounds.X / 2 - 100, GameBounds.Y / 2 - 100, 200, 50), "Play Again");
-
-            if (button.Rec.Contains(Mouse.GetState().Position))
-            {
-                button.Background = Color.DarkGray;
-                button.Color = Color.White;
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                {
-                    Load();
-                    GameEnded = false;
-                }
-            }
-            else
-            {
-                button.Background = Color.White;
-                button.Color = Color.Black;
-            }
-
-            DrawRectangle(_spriteBatch, button.Rec, button.Background);
-            _spriteBatch.DrawString(buttonFont, button.Text, new Vector2(button.Rec.X + 50, button.Rec.Y + 15), button.Color);
+            playAgainButton.Draw();
         }
 
         _spriteBatch.End();
