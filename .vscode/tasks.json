@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/mg-pong.csproj"
+                "${workspaceFolder}/Pong/mg-pong.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
