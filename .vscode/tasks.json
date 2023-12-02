@@ -10,6 +10,16 @@
                 "${workspaceFolder}/Pong/mg-pong.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildDesktopTests",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Pong.Tests/Pong.Tests.csproj"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
