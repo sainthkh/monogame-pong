@@ -79,20 +79,3 @@ public class ComparisonObject<T> {
         }
     }
 }
-
-public class T {
-    // public void X() {
-    //     Describe("asdf", () => {
-    //         It("should be true", () => {
-    //             Expect(1).ToBe(1);
-    //         });
-    //     });
-    // }
-
-    // public List<AA> a = new List<AA>() {
-    //     new AA() {
-    //         Name = "asdf",
-    //         ()
-    //     }
-    // }
-}
