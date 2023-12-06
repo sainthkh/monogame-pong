@@ -4,6 +4,11 @@ using System.Collections.Generic;
 public class Suite {
     public Action suite;
     public string description;
+
+    public Suite(Action suite, string description) {
+        this.suite = suite ?? throw new ArgumentNullException(nameof(suite));
+        this.description = description;
+    }
 }
 
 public static class Suites {
@@ -23,10 +28,7 @@ public static class Suites {
 
 public static class CheckCraft {
     public static void Describe(string description, Action suite) {
-        Suites.Add(new Suite() {
-            description = description,
-            suite = suite
-        });
+        Suites.Add(new Suite(suite, description));
     }
 
     public static void It(string description, Action test) {
@@ -59,14 +61,16 @@ public static class CheckCraft {
 }
 
 public class ComparisonObject<T> {
-    T a;
+    readonly T a;
 
     public ComparisonObject(T a) {
         this.a = a;
     }
 
     public void ToBe(T b) {
-        if(!a.Equals(b)) {
+        bool? result = a?.Equals(b);
+
+        if(result == null || result == false) {
             throw new Exception($"Expected {a} to equal {b}");
         }
     }
