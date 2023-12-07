@@ -29,6 +29,7 @@ public class World1: Scene {
 
     public override void Load() {
         Point GameBounds = SharedResource.GameBounds;
+        var SoundFX = SharedResource.SoundFX;
 
         ball = new Ball();
         ball.X = GameBounds.X / 2;
@@ -71,6 +72,16 @@ public class World1: Scene {
         nextLevelButton = new Button(new Rectangle(GameBounds.X / 2 - 100, GameBounds.Y / 2, 200, 50), "Next");
         nextLevelButton.Click += () => {
             OnClickNextLevel();
+        };
+
+        ball.HitTopWall += (Ball ball) => {
+            PointsPlayer++;
+            SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
+        };
+
+        ball.HitBottomWall += (Ball ball) => {
+            PointsEnemy++;
+            SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
         };
     }
 
@@ -130,32 +141,7 @@ public class World1: Scene {
             }
         }
 
-        //bounce on screen
-        if (ball.Y < 0) //point for right
-        {
-            ball.Y = 1;
-            ball.DirectionY *= -1;
-            PointsPlayer++;
-            SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
-        }
-        else if (ball.Y > GameBounds.Y) //point for left
-        {
-            ball.Y = GameBounds.Y - 1;
-            ball.DirectionY *= -1;
-            PointsEnemy++;
-            SoundFX.PlayWave(440.0f, 50, WaveType.Square, 0.3f);
-        }
-
-        if (ball.X < 0 + 10) //limit to minimum Y pos
-        {
-            ball.X = 10 + 1;
-            ball.DirectionX *= -(1 + Rand.Next(-100, 101) * 0.005f);
-        }
-        else if (ball.X > GameBounds.X - 10) //limit to maximum Y pos
-        {
-            ball.X = GameBounds.X - 11;
-            ball.DirectionX *= -(1 + Rand.Next(-100, 101) * 0.005f);
-        }
+        ball.CheckWallCollision();
 
         #endregion
 
