@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 
@@ -6,6 +7,7 @@ namespace mg_pong;
 public class Ball {
     private Rectangle rec;
     public Rectangle Rec { get { return rec; } }
+    const int BALL_SIZE = 10;
 
     private Vector2 direction;
     public Vector2 Direction { 
@@ -17,7 +19,7 @@ public class Ball {
         set 
         {
             direction = value;
-            direction.Normalize();
+            LimitDirection();
         }
     }
 
@@ -28,14 +30,14 @@ public class Ball {
         get { return direction.X; } 
         set { 
             direction.X = value; 
-            direction.Normalize();
+            LimitDirection();
         } 
     }
     public float DirectionY {
         get { return direction.Y; } 
         set { 
             direction.Y = value; 
-            direction.Normalize();
+            LimitDirection();
         }
     }
 
@@ -44,12 +46,14 @@ public class Ball {
 
     public delegate void OnHitTopWall(Ball ball);
     public delegate void OnHitBottomWall(Ball ball);
+    public delegate void OnHitPlayer(Ball ball, Paddle player);
     public event OnHitTopWall HitTopWall;
     public event OnHitBottomWall HitBottomWall;
+    public event OnHitPlayer HitPlayer;
 
 
     public Ball() {
-        rec = new Rectangle(0, 0, 10, 10);
+        rec = new Rectangle(0, 0, BALL_SIZE, BALL_SIZE);
         Direction = new Vector2(0.1f, 1f);
         Speed = 10.0f;
         MaxSpeed = 15f;
@@ -86,6 +90,47 @@ public class Ball {
         {
             X = GameBounds.X - 11;
             DirectionX *= -(1 + Rand.Next(-100, 101) * 0.005f);
+        }
+    }
+
+    public void CheckPlayerCollision(Paddle player) {
+        if (player.Collides(this))
+        {
+            if (Y > player.Y + player.Height * 0.8 &&
+                X > player.X + player.Width * 0.05 && X < player.X + player.Width * 0.95 ) // Ball hits bottom
+            {
+                DirectionY *= -1;
+                Y = player.Y + player.Height + 1;
+            }
+            else // Ball hits other 3 sides
+            {
+                float y = -1;
+
+                float diff = ((X + BALL_SIZE / 2) - (player.X + player.Width / 2)) / (player.Width / 2);
+                diff = MathF.Abs(diff);
+                float dir = DirectionX < 0 ? -1 : 1;
+
+                float x = diff < 0.15
+                    ? 0
+                    : diff * 2f * dir;
+                
+                Direction = new Vector2(x, y);
+                Y = player.Y - BALL_SIZE - 1;
+            }
+
+            HitPlayer(this, player);
+        }
+    }
+
+    private void LimitDirection() {
+        if (MathF.Abs(DirectionY) * 2 < MathF.Abs(DirectionX)) {
+            int dirX = DirectionX < 0 ? -1 : 1;
+            int dirY = DirectionY < 0 ? -1 : 1;
+
+            var dir = new Vector2(dirX * 1.95f, dirY);
+            dir.Normalize();
+
+            direction = dir;
         }
     }
 }

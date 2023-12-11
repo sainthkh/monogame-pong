@@ -51,7 +51,7 @@ public static class CheckCraft {
         }
     }
 
-    public static ComparisonObject<T> Expect<T>(T a) {
+    public static ComparisonObject<T> Expect<T>(T a) where T: IComparable<T> {
         return new ComparisonObject<T>(a);
     }
 
@@ -60,7 +60,7 @@ public static class CheckCraft {
     }
 }
 
-public class ComparisonObject<T> {
+public class ComparisonObject<T> where T: IComparable<T> {
     readonly T a;
 
     public ComparisonObject(T a) {
@@ -80,6 +80,22 @@ public class ComparisonObject<T> {
 
         if(Math.Abs(Convert.ToDouble(a) - Convert.ToDouble(b)) > delta) {
             throw new Exception($"Expected {a} to be close to {b} with delta {delta}");
+        }
+    }
+
+    public void ToBeGreaterThan(T b) {
+        bool? result = a?.CompareTo(b) > 0;
+
+        if(result == null || result == false) {
+            throw new Exception($"Expected {a} to be greater than {b}");
+        }
+    }
+
+    public void ToBeLessThan(T b) {
+        bool? result = a?.CompareTo(b) < 0;
+
+        if(result == null || result == false) {
+            throw new Exception($"Expected {a} to be less than {b}");
         }
     }
 }

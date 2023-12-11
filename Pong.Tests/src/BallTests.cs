@@ -4,16 +4,164 @@ using static CheckCraft;
 
 public static class BallTests {
     public static void Run() {
+        SharedResource.GameBounds = new Point(450, 800);
+
         Describe("Ball", () => {
             It("moves correctly", () => {
-                // Expect(1 + 1).ToBe(2);
                 var ball = new Ball();
-                ball.Direction = new Vector2(1, 0);
-                ball.Speed = 1;
+                ball.Direction = new Vector2(0.707f, 0.707f);
+                ball.Speed = 10;
                 ball.Move();
 
-                Expect(ball.X).ToBe(1);
-                Expect(ball.Y).ToBe(0);
+                Expect(ball.X).ToBe(7); // 7.07 -> 7
+                Expect(ball.Y).ToBe(7);
+            });
+        });
+
+        Describe("Ball Collision with Walls", () => {
+            It("ball hits top wall", () => {
+                var ball = new Ball();
+                ball.HitTopWall += (ball) => {};
+                ball.Direction = new Vector2(-0.2f, -0.8f);
+                ball.X = 200;
+                ball.Y = 10;
+                ball.Speed = 20;
+                ball.Move();
+                ball.CheckWallCollision();
+
+                Expect(ball.Y).ToBeGreaterThan(0);
+                Expect(ball.DirectionY).ToBeGreaterThan(0);
+                Expect(ball.DirectionX).ToBeLessThan(0);
+            });
+
+            It("ball hits bottom wall", () => {
+                var ball = new Ball();
+                ball.HitBottomWall += (ball) => {};
+                ball.Direction = new Vector2(-0.2f, 0.8f);
+                ball.X = 200;
+                ball.Y = 790;
+                ball.Speed = 20;
+                ball.Move();
+                ball.CheckWallCollision();
+
+                Expect(ball.Y).ToBeLessThan(800);
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeLessThan(0);
+            });
+
+            It("ball hits left wall", () => {
+                var ball = new Ball();
+                ball.Direction = new Vector2(-0.8f, -0.2f);
+                ball.X = 20;
+                ball.Y = 200;
+                ball.Speed = 20;
+                ball.Move();
+                ball.CheckWallCollision();
+
+                Expect(ball.X).ToBeGreaterThan(10);
+                Expect(ball.DirectionX).ToBeGreaterThan(0);
+                Expect(ball.DirectionY).ToBeLessThan(0);
+            });
+
+            It("ball hits right wall", () => {
+                var ball = new Ball();
+                ball.Direction = new Vector2(0.8f, -0.2f);
+                ball.X = 440;
+                ball.Y = 200;
+                ball.Speed = 20;
+                ball.Move();
+                ball.CheckWallCollision();
+
+                Expect(ball.X).ToBeLessThan(440);
+                Expect(ball.DirectionX).ToBeLessThan(0);
+                Expect(ball.DirectionY).ToBeLessThan(0);
+            });
+        });
+    
+        Describe("Ball Collision with Player", () => {
+            It("Ball hit Top Right", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
+
+                ball.Direction = new Vector2(-0.5f, 1);
+                ball.HitPlayer += (ball, paddle) => {};
+                ball.X = 355;
+                ball.Y = 690;
+                ball.Speed = 15;
+
+                paddle.X = 300;
+                paddle.Y = 700;
+
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeLessThan(0);
+                Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
+            });
+
+            It("Ball hit Top Left", () => {
+
+            });
+
+            It("Ball hit Right", () => {
+
+            });
+
+            It("Ball hit Left", () => {
+
+            });
+
+            It("Ball hit Bottom Right", () => {
+
+            });
+
+            It("Ball hit Bottom Left", () => {
+
+            });
+        });
+
+        Describe("Ball Collision with Enemy", () => {
+            It("Ball hit Top Right", () => {
+
+            });
+
+            It("Ball hit Top Left", () => {
+
+            });
+
+            It("Ball hit Right", () => {
+
+            });
+
+            It("Ball hit Left", () => {
+
+            });
+
+            It("Ball hit Bottom Right", () => {
+
+            });
+
+            It("Ball hit Bottom Left", () => {
+
+            });
+        });
+
+        Describe("Ball Collision with Brick", () => {
+            It("Ball hit Top", () => {
+
+            });
+
+            It("Ball hit Bottom", () => {
+
+            });
+
+            It("Ball hit Right", () => {
+
+            });
+
+            It("Ball hit Left", () => {
+
             });
         });
     }
