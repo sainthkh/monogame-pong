@@ -79,7 +79,7 @@ public static class BallTests {
         });
     
         Describe("Ball Collision with Player", () => {
-            It("Ball hit Top Right", () => {
+            It("Ball hit Top Right + Ball moves to left", () => {
                 var ball = new Ball();
                 var paddle = new PaddlePlayer();
 
@@ -100,24 +100,133 @@ public static class BallTests {
                 Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
             });
 
-            It("Ball hit Top Left", () => {
+            It("Ball hit Top Right + Ball moves to right", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
 
+                ball.Direction = new Vector2(0.5f, 1);
+                ball.HitPlayer += (ball, paddle) => {};
+                ball.X = 350;
+                ball.Y = 690;
+                ball.Speed = 15;
+
+                paddle.X = 300;
+                paddle.Y = 700;
+
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeGreaterThan(0);
+                Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
+            });
+
+            It("Ball hit Top Left + Ball moves to left", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
+
+                ball.Direction = new Vector2(-0.5f, 1);
+                ball.HitPlayer += (ball, paddle) => {};
+                ball.X = 315;
+                ball.Y = 690;
+                ball.Speed = 15;
+
+                paddle.X = 300;
+                paddle.Y = 700;
+
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeLessThan(0);
+                Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
+            });
+
+            It("Ball hit Top Left + Ball moves to right", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
+
+                ball.Direction = new Vector2(0.5f, 1);
+                ball.HitPlayer += (ball, paddle) => {};
+                ball.X = 300;
+                ball.Y = 690;
+                ball.Speed = 15;
+
+                paddle.X = 300;
+                paddle.Y = 700;
+
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeGreaterThan(0);
+                Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
             });
 
             It("Ball hit Right", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
 
+                ball.Direction = new Vector2(-0.5f, 1);
+                ball.HitPlayer += (ball, paddle) => {};
+                ball.X = 365;
+                ball.Y = 695;
+                ball.Speed = 15;
+
+                paddle.X = 300;
+                paddle.Y = 700;
+
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeGreaterThan(0);
+                Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
             });
 
             It("Ball hit Left", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
 
+                ball.Direction = new Vector2(0.5f, 1);
+                ball.HitPlayer += (ball, paddle) => {};
+                ball.X = 295;
+                ball.Y = 695;
+                ball.Speed = 15;
+
+                paddle.X = 300;
+                paddle.Y = 700;
+
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
+                Expect(ball.DirectionX).ToBeLessThan(0);
+                Expect(MathF.Abs(ball.DirectionY) * 2).ToBeGreaterThan(MathF.Abs(ball.DirectionX));
             });
 
-            It("Ball hit Bottom Right", () => {
+            It("Ball hit Bottom", () => {
+                var ball = new Ball();
+                var paddle = new PaddlePlayer();
+                var hit = false;
 
-            });
+                ball.Direction = new Vector2(0.5f, -1);
+                ball.HitPlayer += (ball, paddle) => {
+                    hit = true;
+                };
+                ball.X = 320;
+                ball.Y = 730;
+                ball.Speed = 15;
 
-            It("Ball hit Bottom Left", () => {
+                paddle.X = 300;
+                paddle.Y = 700;
 
+                ball.Move();
+                ball.CheckPlayerCollision(paddle);
+
+                Expect(hit).ToBeTrue();
+                Expect(ball.DirectionY).ToBeGreaterThan(0);
+                Expect(ball.DirectionX).ToBeGreaterThan(0);
             });
         });
 

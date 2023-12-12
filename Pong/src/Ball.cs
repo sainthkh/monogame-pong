@@ -96,7 +96,7 @@ public class Ball {
     public void CheckPlayerCollision(Paddle player) {
         if (player.Collides(this))
         {
-            if (Y > player.Y + player.Height * 0.8 &&
+            if (Y > player.Y + player.Height * 0.5 &&
                 X > player.X + player.Width * 0.05 && X < player.X + player.Width * 0.95 ) // Ball hits bottom
             {
                 DirectionY *= -1;
@@ -114,6 +114,13 @@ public class Ball {
                     ? 0
                     : diff * 2f * dir;
                 
+                if ((X > player.X + player.Width * 0.9 && x < 0) || // Hit right
+                    (X < player.X + player.Width * 0.1 && x > 0) // Hit left
+                )
+                {
+                    x *= -1;
+                }
+
                 Direction = new Vector2(x, y);
                 Y = player.Y - BALL_SIZE - 1;
             }

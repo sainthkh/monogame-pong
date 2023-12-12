@@ -46,6 +46,7 @@ public static class CheckCraft {
             Console.Write("  X ");
             Console.ForegroundColor = oldColor;
 
+            Console.WriteLine(description);
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
         }
@@ -65,6 +66,18 @@ public class ComparisonObject<T> where T: IComparable<T> {
 
     public ComparisonObject(T a) {
         this.a = a;
+    }
+
+    public void ToBeTrue() {
+        if(!Convert.ToBoolean(a)) {
+            throw new Exception($"Expected {a} to be true");
+        }
+    }
+
+    public void ToBeFalse() {
+        if(Convert.ToBoolean(a)) {
+            throw new Exception($"Expected {a} to be false");
+        }
     }
 
     public void ToBe(T b) {
