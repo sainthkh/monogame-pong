@@ -46,10 +46,11 @@ public class Ball {
 
     public delegate void OnHitTopWall(Ball ball);
     public delegate void OnHitBottomWall(Ball ball);
-    public delegate void OnHitPlayer(Ball ball, Paddle player);
+    public delegate void OnHitPaddle(Ball ball, Paddle player);
     public event OnHitTopWall HitTopWall;
     public event OnHitBottomWall HitBottomWall;
-    public event OnHitPlayer HitPlayer;
+    public event OnHitPaddle HitPlayer;
+    public event OnHitPaddle HitEnemy;
 
 
     public Ball() {
@@ -129,15 +130,37 @@ public class Ball {
         }
     }
 
+    public void CheckEnemyCollision(Paddle enemy) {
+        if (enemy.Collides(this))
+        {
+            var xs = RandomFloat(.5f, 1.5f);
+            var ys = RandomFloat(.5f, 1.5f);
+            var xd = RandomDirection();
+
+            Direction = new Vector2(xs * xd, ys);
+
+            HitEnemy(this, enemy);
+        }
+    }
+
     private void LimitDirection() {
         if (MathF.Abs(DirectionY) * 2 < MathF.Abs(DirectionX)) {
             int dirX = DirectionX < 0 ? -1 : 1;
             int dirY = DirectionY < 0 ? -1 : 1;
 
-            var dir = new Vector2(dirX * 1.95f, dirY);
-            dir.Normalize();
-
-            direction = dir;
+            direction = new Vector2(dirX * 1.95f, dirY);
         }
+
+        direction.Normalize();
+    }
+
+    private float RandomFloat(float min, float max) {
+        var v = SharedResource.Rand.NextSingle();
+
+        return min + (max - min) * v;
+    }
+
+    private int RandomDirection() {
+        return SharedResource.Rand.Next(0, 2) == 0 ? -1 : 1;
     }
 }

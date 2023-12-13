@@ -87,6 +87,10 @@ public class World1: Scene {
         ball.HitPlayer += (Ball ball, Paddle player) => {
             SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
         };
+
+        ball.HitEnemy += (Ball ball, Paddle enemy) => {
+            SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
+        };
     }
 
     public virtual void OnClickNextLevel() {}
@@ -110,17 +114,7 @@ public class World1: Scene {
         }
 
         //check for collision with paddles
-        if (enemy.Collides(ball))
-        {
-            int Paddle_Center = enemy.X + enemy.Width / 2;
-            ball.Direction = new Vector2(
-                (ball.X - Paddle_Center) / (enemy.Width / 2),
-                ball.Direction.Y * -1.1f
-            );
-
-            ball.Y = enemy.Y + enemy.Height;
-            SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
-        }
+        ball.CheckEnemyCollision(enemy);
         ball.CheckPlayerCollision(player);
 
         // check for collision with bricks
