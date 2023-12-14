@@ -82,9 +82,9 @@ public class Ball {
             HitBottomWall(this);
         }
 
-        if (X < 0 + 10)
+        if (X < 0)
         {
-            X = 10 + 1;
+            X = 1;
             DirectionX *= -(1 + Rand.Next(-100, 101) * 0.005f);
         }
         else if (X > GameBounds.X - 10)

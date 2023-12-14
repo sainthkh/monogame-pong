@@ -52,7 +52,7 @@ public static class BallTests {
             It("ball hits left wall", () => {
                 var ball = new Ball();
                 ball.Direction = new Vector2(-0.8f, -0.2f);
-                ball.X = 20;
+                ball.X = 10;
                 ball.Y = 200;
                 ball.Speed = 20;
                 ball.Move();
