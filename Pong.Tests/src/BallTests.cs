@@ -231,28 +231,23 @@ public static class BallTests {
         });
 
         Describe("Ball Collision with Enemy", () => {
-            It("Ball hit Top Right", () => {
+            It("Ball moves toward the player", () => {
+                var ball = new Ball();
+                var paddle = new PaddleEnemy();
 
-            });
+                ball.Direction = new Vector2(-0.5f, -1);
+                ball.HitEnemy += (ball, paddle) => {};
+                ball.X = 320;
+                ball.Y = 80;
+                ball.Speed = 15;
 
-            It("Ball hit Top Left", () => {
+                paddle.X = 300;
 
-            });
+                ball.Move();
+                ball.CheckEnemyCollision(paddle);
 
-            It("Ball hit Right", () => {
-
-            });
-
-            It("Ball hit Left", () => {
-
-            });
-
-            It("Ball hit Bottom Right", () => {
-
-            });
-
-            It("Ball hit Bottom Left", () => {
-
+                Expect(ball.DirectionY).ToBeGreaterThan(0);
+                Expect(ball.DirectionX).ToBeLessThan(0);
             });
         });
 
