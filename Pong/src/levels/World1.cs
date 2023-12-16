@@ -123,7 +123,7 @@ public class World1: Scene {
             if (brick.IsAlive && brick.Collides(ball))
             {
                 brick.OnHit(ball);
-                ball.DirectionY *= -1;
+                ball.OnCollideBrick(brick);
                 SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
 
                 break;

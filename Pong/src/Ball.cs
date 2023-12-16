@@ -143,6 +143,22 @@ public class Ball {
         }
     }
 
+    public void OnCollideBrick(Brick brick) {
+        float blockDeg = BlockDegree(brick.Width, brick.Height);
+        var degs = new float[] { -180 + blockDeg, -blockDeg, blockDeg, 180 - blockDeg, };
+
+        float deg = Degree();
+
+        if (deg > degs[0] && deg < degs[1] || deg > degs[2] && deg < degs[3])
+        {
+            DirectionX *= -1;
+        }
+        else
+        {
+            DirectionY *= -1;
+        }
+    }
+
     private void LimitDirection() {
         if (MathF.Abs(DirectionY) * 2 < MathF.Abs(DirectionX)) {
             int dirX = DirectionX < 0 ? -1 : 1;
@@ -162,5 +178,13 @@ public class Ball {
 
     private int RandomDirection() {
         return SharedResource.Rand.Next(0, 2) == 0 ? -1 : 1;
+    }
+
+    private float Degree() {
+        return MathF.Atan2(DirectionX, -DirectionY) * 180 / MathF.PI;
+    }
+
+    private float BlockDegree(float width, float height) {
+        return MathF.Atan2(height / 2, width / 2) * 180 / MathF.PI;
     }
 }

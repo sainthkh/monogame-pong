@@ -5,6 +5,8 @@ namespace mg_pong;
 public class Brick {
     protected Rectangle rec;
     public Rectangle Rec { get { return rec; } }
+    public int Width { get { return rec.Width; } set { rec.Width = value; } }
+    public int Height { get { return rec.Height; } set { rec.Height = value; } }
     public Color Color { get; set; }
     public bool IsAlive { get; set; }
 
