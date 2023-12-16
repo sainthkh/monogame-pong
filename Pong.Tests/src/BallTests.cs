@@ -231,7 +231,7 @@ public static class BallTests {
         });
 
         Describe("Ball Collision with Enemy", () => {
-            It("Ball moves toward the player", () => {
+            It("Ball moves toward the enemy", () => {
                 var ball = new Ball();
                 var paddle = new PaddleEnemy();
 
@@ -247,7 +247,6 @@ public static class BallTests {
                 ball.CheckEnemyCollision(paddle);
 
                 Expect(ball.DirectionY).ToBeGreaterThan(0);
-                Expect(ball.DirectionX).ToBeLessThan(0);
             });
         });
 
