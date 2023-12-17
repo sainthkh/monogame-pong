@@ -252,19 +252,75 @@ public static class BallTests {
 
         Describe("Ball Collision with Brick", () => {
             It("Ball hit Top", () => {
+                var ball = new Ball();
+                var brick = new Brick(100, 100, 20, 20);
 
+                ball.Direction = new Vector2(-0.5f, 1);
+                ball.X = 120;
+                ball.Y = 105;
+                ball.Speed = 15;
+
+                ball.Move();
+
+                Expect(brick.Collides(ball)).ToBeTrue();
+
+                ball.OnCollideBrick(brick);
+
+                Expect(ball.DirectionY).ToBeLessThan(0);
             });
 
             It("Ball hit Bottom", () => {
+                var ball = new Ball();
+                var brick = new Brick(100, 100, 20, 20);
 
+                ball.Direction = new Vector2(-0.5f, -1);
+                ball.X = 120;
+                ball.Y = 125;
+                ball.Speed = 15;
+
+                ball.Move();
+
+                Expect(brick.Collides(ball)).ToBeTrue();
+
+                ball.OnCollideBrick(brick);
+
+                Expect(ball.DirectionY).ToBeGreaterThan(0);
             });
 
             It("Ball hit Right", () => {
+                var ball = new Ball();
+                var brick = new Brick(100, 100, 20, 20);
 
+                ball.Direction = new Vector2(-1, -0.5f);
+                ball.X = 125;
+                ball.Y = 120;
+                ball.Speed = 15;
+
+                ball.Move();
+
+                Expect(brick.Collides(ball)).ToBeTrue();
+
+                ball.OnCollideBrick(brick);
+
+                Expect(ball.DirectionX).ToBeGreaterThan(0);
             });
 
             It("Ball hit Left", () => {
+                var ball = new Ball();
+                var brick = new Brick(100, 100, 20, 20);
 
+                ball.Direction = new Vector2(1, -0.5f);
+                ball.X = 95;
+                ball.Y = 120;
+                ball.Speed = 15;
+
+                ball.Move();
+
+                Expect(brick.Collides(ball)).ToBeTrue();
+
+                ball.OnCollideBrick(brick);
+
+                Expect(ball.DirectionX).ToBeLessThan(0);
             });
         });
     }
