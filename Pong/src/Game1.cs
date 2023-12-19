@@ -21,7 +21,7 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = GameBounds.X;
         _graphics.PreferredBackBufferHeight = GameBounds.Y;
         IsMouseVisible = true;
-        SceneManager.LoadLevel(2);
+        SceneManager.LoadLevel(5);
     }
 
     protected override void LoadContent()
