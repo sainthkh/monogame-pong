@@ -9,7 +9,7 @@ namespace mg_pong;
 public class Level5: World1 {
     protected override void AddMoreBlocks()
     {
-        const int NUM_BRICK_LINES = 4;
+        const int NUM_BRICK_LINES = 6;
         const int NUM_BRICKS_PER_LINE = 6;
 
         for (int i = 0; i < NUM_BRICK_LINES; i++)
