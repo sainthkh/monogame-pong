@@ -35,6 +35,9 @@ public static class SceneManager {
             case 5:
                 currentScene = new Level5();
                 break;
+            case 6:
+                currentScene = new Level6();
+                break;
         }
 
         currentScene.Load();
