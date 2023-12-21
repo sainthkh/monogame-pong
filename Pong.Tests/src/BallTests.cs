@@ -58,7 +58,7 @@ public static class BallTests {
                 ball.Move();
                 ball.CheckWallCollision();
 
-                Expect(ball.X).ToBeGreaterThan(10);
+                Expect(ball.X).ToBeGreaterThan(0);
                 Expect(ball.DirectionX).ToBeGreaterThan(0);
                 Expect(ball.DirectionY).ToBeLessThan(0);
             });

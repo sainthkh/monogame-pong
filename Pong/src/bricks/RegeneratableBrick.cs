@@ -4,7 +4,7 @@ namespace mg_pong;
 
 public class RegeneratableBrick: Brick {
     private float coolTime = 0;
-    private const float RESPAWN_TIME = 5;
+    public const float RESPAWN_TIME = 5;
 
     public RegeneratableBrick(int x, int y, int width, int height = 15) : base(x, y, width, height) { }
 
