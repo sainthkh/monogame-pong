@@ -12,7 +12,6 @@ public class Level6: World1 {
         var points = new List<Point>() {
             new Point(80, 100), new Point(180, 100), new Point(280, 100), new Point(380, 100), new Point(480, 100), new Point(580, 100),
             new Point(80, 650), new Point(80, 550), new Point(80, 450), new Point(80, 350), new Point(80, 250), new Point(80, 150),
-            new Point(210, 390), new Point(50, 390), new Point(160, 390), new Point(270, 390), new Point(380, 390), new Point(490, 390),
             new Point(350, 650), new Point(350, 550), new Point(350, 450), new Point(350, 350), new Point(350, 250), new Point(350, 150),
             new Point(350, 100), new Point(300, 100), new Point(250, 100), new Point(200, 100), new Point(150, 100), new Point(100, 100),
         };
