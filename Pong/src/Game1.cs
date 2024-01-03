@@ -21,7 +21,6 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = GameBounds.X;
         _graphics.PreferredBackBufferHeight = GameBounds.Y;
         IsMouseVisible = true;
-        SceneManager.LoadLevel(7);
     }
 
     protected override void LoadContent()
@@ -45,6 +44,7 @@ public class Game1 : Game
         SharedResource.ResultMessageFont = resultMessageFont;
         SharedResource.ButtonFont = buttonFont;
 
+        SceneManager.Load(SceneTypes.Game);
         SceneManager.CurrentScene.Load();
     }
 

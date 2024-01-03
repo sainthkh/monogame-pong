@@ -12,6 +12,9 @@ public static class SceneManager {
             case SceneTypes.Lobby:
                 currentScene = null;
                 break;
+            case SceneTypes.Game:
+                currentScene = new World1();
+                break;
             default:
                 currentScene = null;
                 break;

@@ -27,6 +27,8 @@ public class World1: Scene {
     private Button playAgainButton;
     private Button nextLevelButton;
 
+    private RenderTarget2D playArea;
+
     public override void Load() {
         Point GameBounds = SharedResource.GameBounds;
         var SoundFX = SharedResource.SoundFX;
@@ -91,6 +93,15 @@ public class World1: Scene {
         ball.HitEnemy += (Ball ball, Paddle enemy) => {
             SoundFX.PlayWave(220.0f, 50, WaveType.Sin, 0.3f);
         };
+
+        playArea = new RenderTarget2D(
+            SharedResource.GraphicsDevice,
+            GameBounds.X,
+            GameBounds.Y,
+            false,
+            SharedResource.GraphicsDevice.PresentationParameters.BackBufferFormat,
+            DepthFormat.Depth24
+        );
     }
 
     public virtual void OnClickNextLevel() {}
@@ -158,13 +169,28 @@ public class World1: Scene {
         else if (JingleCounter > speed * 4) { JingleCounter = int.MaxValue - 1; }
         #endregion Play Reset Jingle
     }
+
     public override void Draw(GameTime gameTime) {
+        DrawToPlayArea();
+
+        SpriteBatch _spriteBatch = SharedResource.SpriteBatch;
+
+        _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+
+        _spriteBatch.Draw(playArea, Vector2.Zero, Color.White);
+
+        _spriteBatch.End();
+    }
+
+    private void DrawToPlayArea() {
         GraphicsDevice GraphicsDevice = SharedResource.GraphicsDevice;
         SpriteBatch _spriteBatch = SharedResource.SpriteBatch;
         SpriteFont font = SharedResource.Font;
         SpriteFont resultMessageFont = SharedResource.ResultMessageFont;
         SpriteFont buttonFont = SharedResource.ButtonFont;
         Point GameBounds = SharedResource.GameBounds;
+
+        GraphicsDevice.SetRenderTarget(playArea);
 
         GraphicsDevice.Clear(BackgroundColor);
 
@@ -215,6 +241,8 @@ public class World1: Scene {
         }
 
         _spriteBatch.End();
+
+        GraphicsDevice.SetRenderTarget(null);
     }
 
     private void DrawRectangle(SpriteBatch sb, Rectangle Rec, Color color)
