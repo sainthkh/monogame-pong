@@ -13,7 +13,7 @@ public static class SceneManager {
                 currentScene = null;
                 break;
             case SceneTypes.Game:
-                currentScene = new World1();
+                currentScene = new World();
                 break;
             default:
                 currentScene = null;

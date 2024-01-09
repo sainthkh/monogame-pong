@@ -7,7 +7,8 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    private Point GameBounds = new Point(450, 800); //window resolution
+    private Point WindowSize = new Point(1200, 900); //window resolution
+    private Point GameSize = new Point(450, 800);
 
     public Texture2D Texture;
 
@@ -18,8 +19,8 @@ public class Game1 : Game
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
-        _graphics.PreferredBackBufferWidth = GameBounds.X;
-        _graphics.PreferredBackBufferHeight = GameBounds.Y;
+        _graphics.PreferredBackBufferWidth = WindowSize.X;
+        _graphics.PreferredBackBufferHeight = WindowSize.Y;
         IsMouseVisible = true;
     }
 
@@ -29,6 +30,8 @@ public class Game1 : Game
 
         SharedResource.GraphicsDevice = GraphicsDevice;
         SharedResource.SpriteBatch = _spriteBatch;
+        Xna.GraphicsDevice = GraphicsDevice;
+        Xna.SpriteBatch = _spriteBatch;
 
         font = Content.Load<SpriteFont>("Content/Score");
         resultMessageFont = Content.Load<SpriteFont>("Content/GameResult");
@@ -40,9 +43,14 @@ public class Game1 : Game
         SharedResource.Font = font;
         SharedResource.Texture = Texture;
         SharedResource.SoundFX = new AudioSource();
-        SharedResource.GameBounds = GameBounds;
+        SharedResource.GameBounds = GameSize;
         SharedResource.ResultMessageFont = resultMessageFont;
         SharedResource.ButtonFont = buttonFont;
+
+        GameBounds.X = GameSize.X;
+        GameBounds.Y = GameSize.Y;
+        WindowBounds.X = WindowSize.X;
+        WindowBounds.Y = WindowSize.Y;
 
         SceneManager.Load(SceneTypes.Game);
         SceneManager.CurrentScene.Load();
