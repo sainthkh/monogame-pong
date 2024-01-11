@@ -39,7 +39,7 @@ public class Paddle2Player: Paddle2 {
         Draw.Rectangle(Bounds, Color.White);
     }
 
-    public void OnCollide(GameObject paddle, GameObject other) {
+    public void OnCollide(GameObject paddle, Solid solid) {
 
     }
 }

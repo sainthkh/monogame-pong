@@ -12,7 +12,7 @@ public class Actor: GameObject {
         yRemainder = 0;
     }
 
-    public void MoveX(float amount, Action<GameObject, GameObject> onCollide) {
+    public void MoveX(float amount, Action<GameObject, Solid> onCollideSolid) {
         xRemainder += amount;
         int move = (int)xRemainder;
 
@@ -23,13 +23,13 @@ public class Actor: GameObject {
             while (move != 0) {
                 Bounds.X += sign;
 
-                var obj = GetCollidingSolid();
+                var solid = GetCollidingSolid();
 
-                if (obj != null) { // Collided
+                if (solid != null) { // Collided
                     Bounds.X -= sign; // Roll back movement
 
-                    if (onCollide != null) {
-                        onCollide(this, obj);
+                    if (onCollideSolid != null) {
+                        onCollideSolid(this, solid);
                     }
                     break;
                 }
@@ -42,7 +42,7 @@ public class Actor: GameObject {
         }
     }
 
-    public void MoveY(float amount, Action<GameObject, GameObject> onCollide) {
+    public void MoveY(float amount, Action<GameObject, Solid> onCollideSolid) {
         yRemainder += amount;
         int move = (int)yRemainder;
 
@@ -53,13 +53,13 @@ public class Actor: GameObject {
             while (move != 0) {
                 Bounds.Y += sign;
 
-                var obj = GetCollidingSolid();
+                var solid = GetCollidingSolid();
 
-                if (obj != null) { // Collided
+                if (solid != null) { // Collided
                     Bounds.Y -= sign; // Roll back movement
 
-                    if (onCollide != null) {
-                        onCollide(this, obj);
+                    if (onCollideSolid != null) {
+                        onCollideSolid(this, solid);
                     }
                     break;
                 }
@@ -72,12 +72,12 @@ public class Actor: GameObject {
         }
     }
 
-    public GameObject GetCollidingSolid() {
-        var objs = GameObjectManager.Solids;
+    public Solid GetCollidingSolid() {
+        var solids = GameObjectManager.Solids;
 
-        foreach (var obj in objs) {
-            if (obj.Collides(Bounds)) {
-                return obj;
+        foreach (var solid in solids) {
+            if (solid.Collides(Bounds)) {
+                return solid;
             }
         }
 
