@@ -23,7 +23,7 @@ public class Actor: GameObject {
             while (move != 0) {
                 Bounds.X += sign;
 
-                var obj = GetCollidingGameObject();
+                var obj = GetCollidingSolid();
 
                 if (obj != null) { // Collided
                     Bounds.X -= sign; // Roll back movement
@@ -53,7 +53,7 @@ public class Actor: GameObject {
             while (move != 0) {
                 Bounds.Y += sign;
 
-                var obj = GetCollidingGameObject();
+                var obj = GetCollidingSolid();
 
                 if (obj != null) { // Collided
                     Bounds.Y -= sign; // Roll back movement
@@ -72,8 +72,8 @@ public class Actor: GameObject {
         }
     }
 
-    public GameObject GetCollidingGameObject() {
-        var objs = GameObjectManager.Objects;
+    public GameObject GetCollidingSolid() {
+        var objs = GameObjectManager.Solids;
 
         foreach (var obj in objs) {
             if (obj.Collides(Bounds)) {
