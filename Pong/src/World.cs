@@ -8,12 +8,17 @@ namespace mg_pong;
 public class World: Scene {
 
     private Paddle2Player player;
+    private Ball2 ball;
 
     public override void Load()
     {
         player = new Paddle2Player();
 
         LoadWalls();
+
+        ball = new Ball2();
+        ball.X = GameBounds.X / 2;
+        ball.Y = GameBounds.Y / 2;
     }
 
     private void LoadWalls() {
@@ -34,7 +39,10 @@ public class World: Scene {
 
     public override void Update(GameTime gameTime)
     {
-        player.Update(gameTime);
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        player.Update(deltaTime);
+        ball.Update(deltaTime);
     }
 
     public override void Draw(GameTime gameTime)
@@ -44,6 +52,7 @@ public class World: Scene {
         Xna.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
         player.Render();
+        ball.Render();
 
         Xna.SpriteBatch.End();
     }

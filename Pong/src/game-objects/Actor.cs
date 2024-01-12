@@ -21,12 +21,12 @@ public class Actor: GameObject {
             int sign = Math.Sign(move);
 
             while (move != 0) {
-                Bounds.X += sign;
+                X += sign;
 
                 var solid = GetCollidingSolid();
 
                 if (solid != null) { // Collided
-                    Bounds.X -= sign; // Roll back movement
+                    X -= sign; // Roll back movement
 
                     if (onCollideSolid != null) {
                         onCollideSolid(this, solid);
@@ -51,12 +51,12 @@ public class Actor: GameObject {
             int sign = Math.Sign(move);
 
             while (move != 0) {
-                Bounds.Y += sign;
+                Y += sign;
 
                 var solid = GetCollidingSolid();
 
                 if (solid != null) { // Collided
-                    Bounds.Y -= sign; // Roll back movement
+                    Y -= sign; // Roll back movement
 
                     if (onCollideSolid != null) {
                         onCollideSolid(this, solid);

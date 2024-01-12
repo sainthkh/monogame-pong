@@ -24,14 +24,14 @@ public class Paddle2Player: Paddle2 {
         Speed = 250;
     }
 
-    public void Update(GameTime gameTime) {
+    public void Update(float deltaTime) {
         KeyboardState keyboardState = Keyboard.GetState();
         
         if (keyboardState.IsKeyDown(Keys.Left)) {
-            MoveX(-Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, OnCollide);
+            MoveX(-Speed * deltaTime, OnCollide);
         }
         else if (keyboardState.IsKeyDown(Keys.Right)) {
-            MoveX(Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, OnCollide);
+            MoveX(Speed * deltaTime, OnCollide);
         }
     }
 
