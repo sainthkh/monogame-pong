@@ -47,4 +47,9 @@ public class Ball2: Movable {
             }
         }
     }
+
+    public override void OnCollideActor(Snapshot other, float deltaTime)
+    {
+        Console.WriteLine("Ball collided with actor");
+    }
 }

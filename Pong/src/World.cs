@@ -41,8 +41,23 @@ public class World: Scene {
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+        MoveActors(deltaTime);
+        HandleCollsions(deltaTime);
+    }
+
+    private void MoveActors(float deltaTime) {
         player.Move(deltaTime);
         ball.Move(deltaTime);
+    }
+
+    private void HandleCollsions(float deltaTime) {
+        CollisionManager.Clear();
+
+        if(player.Collides(ball)) {
+            CollisionManager.AddCollision(player, ball);
+        }
+
+        CollisionManager.HandleCollisions(deltaTime);
     }
 
     public override void Draw(GameTime gameTime)

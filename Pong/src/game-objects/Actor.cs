@@ -7,10 +7,20 @@ public class Actor: GameObject {
     private float xRemainder;
     private float yRemainder;
 
+    protected ActorType actorType;
+
+    public ActorType ActorType { get { return actorType; } }
+
     public Actor(): base(GameObjectType.Actor) {
         xRemainder = 0;
         yRemainder = 0;
     }
+
+    public virtual Snapshot Snapshot() {
+        return null;
+    }
+
+    public virtual void OnCollideActor(Snapshot other, float deltaTime) {}
 
     public void MoveX(float amount, Action<GameObject, Solid> onCollideSolid) {
         xRemainder += amount;
@@ -72,7 +82,7 @@ public class Actor: GameObject {
         }
     }
 
-    public Solid GetCollidingSolid() {
+    private Solid GetCollidingSolid() {
         var solids = GameObjectManager.Solids;
 
         foreach (var solid in solids) {

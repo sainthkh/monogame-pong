@@ -68,4 +68,8 @@ public class GameObject {
     public bool Collides(Rectangle other) {
         return Bounds.Intersects(other);
     }
+
+    public bool Collides(GameObject other) {
+        return Bounds.Intersects(other.Bounds);
+    }
 }
