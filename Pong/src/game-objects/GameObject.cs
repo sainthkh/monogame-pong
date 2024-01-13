@@ -9,6 +9,8 @@ public enum GameObjectType {
 }
 
 public class GameObject {
+    private int id;
+    private static int nextId = 0;
     private int x;
     private int y;
     private int width;
@@ -17,6 +19,8 @@ public class GameObject {
     private Rectangle bounds;
     
     public readonly GameObjectType Type;
+
+    public int Id { get { return id; } }
     public int X { 
         get { return x; } 
         set { 
@@ -58,6 +62,7 @@ public class GameObject {
 
     protected GameObject(GameObjectType type) {
         Type = type;
+        id = nextId++;
     }
 
     public bool Collides(Rectangle other) {
