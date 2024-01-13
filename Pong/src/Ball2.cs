@@ -18,7 +18,7 @@ public class Ball2: Movable {
         Speed = 400.0f;
     }
 
-    public void Update(float deltaTime) {
+    public void Move(float deltaTime) {
         MoveX(DirectionX * Speed * deltaTime, OnCollideSolid);
         MoveY(DirectionY * Speed * deltaTime, OnCollideSolid);
     }

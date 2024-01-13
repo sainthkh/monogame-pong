@@ -24,7 +24,7 @@ public class Paddle2Player: Paddle2 {
         Speed = 250;
     }
 
-    public void Update(float deltaTime) {
+    public void Move(float deltaTime) {
         KeyboardState keyboardState = Keyboard.GetState();
         
         if (keyboardState.IsKeyDown(Keys.Left)) {

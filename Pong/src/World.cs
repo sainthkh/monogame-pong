@@ -41,8 +41,8 @@ public class World: Scene {
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        player.Update(deltaTime);
-        ball.Update(deltaTime);
+        player.Move(deltaTime);
+        ball.Move(deltaTime);
     }
 
     public override void Draw(GameTime gameTime)
