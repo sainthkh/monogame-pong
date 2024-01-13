@@ -45,7 +45,6 @@ public class Actor: GameObject {
                 }
                 else 
                 {
-                    X += sign;
                     move -= sign;
                 }
             }
@@ -75,7 +74,6 @@ public class Actor: GameObject {
                 }
                 else 
                 {
-                    Y += sign;
                     move -= sign;
                 }
             }

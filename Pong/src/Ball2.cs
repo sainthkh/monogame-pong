@@ -1,8 +1,19 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace mg_pong;
+
+public class BallSnapshot: Snapshot {
+    public Vector2 Direction;
+    public float Speed;
+
+    public BallSnapshot(Ball2 ball): base(ball) {
+        Direction = ball.Direction;
+        Speed = ball.Speed;
+    }
+}
 
 public class Ball2: Movable {
     public const int BALL_SIZE = 10;
@@ -12,10 +23,19 @@ public class Ball2: Movable {
     public event OnHitTopWall HitTopWall;
     public event OnHitBottomWall HitBottomWall;
 
+    private List<float> cornerDegrees;
+
     public Ball2() {
         Direction = new Vector2(0.1f, 1f);
         Bounds = new Rectangle(0, 0, BALL_SIZE, BALL_SIZE);
         Speed = 400.0f;
+
+        cornerDegrees = MathUtil.CornerDegrees(Bounds);
+    }
+
+    public override Snapshot Snapshot()
+    {
+        return new BallSnapshot(this);
     }
 
     public void Move(float deltaTime) {
@@ -50,6 +70,36 @@ public class Ball2: Movable {
 
     public override void OnCollideActor(Snapshot other, float deltaTime)
     {
-        Console.WriteLine("Ball collided with actor");
+        if (other.Type == ActorType.Player) {
+            var player = (PlayerSnapshot)other;
+
+            Vector2 vec = new Vector2(X - player.X, Y - player.Y);
+            vec.Normalize();
+            float degree = MathUtil.Degree(vec, new Vector2(0, 1));
+            Side side = MathUtil.GetSide(player.CornerDegrees, degree);
+
+            if (side == Side.Top) {
+                var diff = Math.Abs(X - player.X) / (player.Width / 2);
+
+                if ((diff) < 0.1f) {
+                    Direction = new Vector2(0, -1);
+                }
+                else {
+                    int dir = MathUtil.Sign(DirectionX);
+
+                    Direction = new Vector2(diff * dir, -1);
+                }
+            }
+            else if (side == Side.Bottom) {
+                DirectionY = -DirectionY;
+            }
+            else if (side == Side.Left || side == Side.Right) {
+                Direction = -Direction;
+            }
+
+            // Roll back movement
+            X -= (int) (DirectionX * Speed * deltaTime * .6f);
+            Y -= (int) (DirectionY * Speed * deltaTime * .6f);
+        }
     }
 }

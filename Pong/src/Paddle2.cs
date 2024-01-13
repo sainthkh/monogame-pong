@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace mg_pong;
 
@@ -19,9 +20,28 @@ public class Paddle2: Actor {
     }
 }
 
+public class PlayerSnapshot: Snapshot {
+    public List<float> CornerDegrees;
+
+    public PlayerSnapshot(Paddle2Player player): base(player) {}
+}
+
 public class Paddle2Player: Paddle2 {
+    private List<float> cornerDegrees;
+
     public Paddle2Player(): base(GameBounds.Y - 80) {
         Speed = 250;
+        actorType = ActorType.Player;
+
+        cornerDegrees = MathUtil.CornerDegrees(Bounds);
+    }
+
+    public override Snapshot Snapshot()
+    {
+        var snapshot = new PlayerSnapshot(this);
+        snapshot.CornerDegrees = cornerDegrees;
+        
+        return snapshot;
     }
 
     public void Move(float deltaTime) {
