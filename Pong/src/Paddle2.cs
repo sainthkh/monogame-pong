@@ -6,6 +6,8 @@ using System.Collections.Generic;
 namespace mg_pong;
 
 public class Paddle2: Actor {
+    protected List<float> cornerDegrees;
+
     public const int INITIAL_WIDTH = 60;
     public const int HEIGHT = 20;
 
@@ -17,6 +19,7 @@ public class Paddle2: Actor {
         Y = y;
 
         Bounds = new Rectangle(X, Y, INITIAL_WIDTH, HEIGHT);
+        cornerDegrees = MathUtil.CornerDegrees(Bounds);
     }
 }
 
@@ -27,13 +30,9 @@ public class PlayerSnapshot: Snapshot {
 }
 
 public class Paddle2Player: Paddle2 {
-    private List<float> cornerDegrees;
-
     public Paddle2Player(): base(GameBounds.Y - 80) {
         Speed = 250;
         actorType = ActorType.Player;
-
-        cornerDegrees = MathUtil.CornerDegrees(Bounds);
     }
 
     public override Snapshot Snapshot()
@@ -52,6 +51,48 @@ public class Paddle2Player: Paddle2 {
         }
         else if (keyboardState.IsKeyDown(Keys.Right)) {
             MoveX(Speed * deltaTime, OnCollide);
+        }
+    }
+
+    public void Render() {
+        Draw.Rectangle(Bounds, Color.White);
+    }
+
+    public void OnCollide(GameObject paddle, Solid solid) {
+
+    }
+}
+
+public class EnemySnapshot: Snapshot {
+    public List<float> CornerDegrees;
+
+    public EnemySnapshot(Paddle2Enemy enemy): base(enemy) {}
+}
+
+public class Paddle2Enemy: Paddle2 {
+    public Ball2 Ball { get; set; }
+
+    public Paddle2Enemy(): base(80) {
+        Speed = 250;
+        actorType = ActorType.Enemy;
+    }
+
+    public override Snapshot Snapshot()
+    {
+        var snapshot = new EnemySnapshot(this);
+        snapshot.CornerDegrees = cornerDegrees;
+        
+        return snapshot;
+    }
+
+    public void Move(float deltaTime) {
+        float amount = Xna.Rand.Next(5, 15) * .1f;
+
+        if (X < Ball.X - 20) {
+            MoveX(amount * Speed * deltaTime, OnCollide);
+        }
+        else if (X > Ball.X + 20) {
+            MoveX(-amount * Speed * deltaTime, OnCollide);
         }
     }
 

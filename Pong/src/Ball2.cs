@@ -28,7 +28,7 @@ public class Ball2: Movable {
     public Ball2() {
         Direction = new Vector2(0.1f, 1f);
         Bounds = new Rectangle(0, 0, BALL_SIZE, BALL_SIZE);
-        Speed = 400.0f;
+        Speed = 550.0f;
 
         cornerDegrees = MathUtil.CornerDegrees(Bounds);
     }
@@ -71,6 +71,10 @@ public class Ball2: Movable {
     public override void OnCollideActor(Snapshot other, float deltaTime)
     {
         if (other.Type == ActorType.Player) {
+            // Roll back movement
+            X -= (int) (DirectionX * Speed * deltaTime * .6f);
+            Y -= (int) (DirectionY * Speed * deltaTime * .6f);
+
             var player = (PlayerSnapshot)other;
 
             Vector2 vec = new Vector2(X - player.X, Y - player.Y);
@@ -96,10 +100,32 @@ public class Ball2: Movable {
             else if (side == Side.Left || side == Side.Right) {
                 Direction = -Direction;
             }
-
+        }
+        else if (other.Type == ActorType.Enemy) {
             // Roll back movement
             X -= (int) (DirectionX * Speed * deltaTime * .6f);
             Y -= (int) (DirectionY * Speed * deltaTime * .6f);
+
+            var enemy = (EnemySnapshot)other;
+
+            Vector2 vec = new Vector2(X - enemy.X, Y - enemy.Y);
+            vec.Normalize();
+            float degree = MathUtil.Degree(vec, new Vector2(0, 1));
+            Side side = MathUtil.GetSide(enemy.CornerDegrees, degree);
+
+            if (side == Side.Top) {
+                DirectionY = -DirectionY;
+            }
+            else if (side == Side.Bottom) {
+                var xs = Xna.Rand.RandomFloat(.5f, 1.5f);
+                var ys = Xna.Rand.RandomFloat(.5f, 1.5f);
+                var xd = Xna.Rand.RandomSign();
+
+                Direction = new Vector2(xs * xd, ys);
+            }
+            else if (side == Side.Left || side == Side.Right) {
+                Direction = -Direction;
+            }
         }
     }
 }

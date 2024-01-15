@@ -18,6 +18,17 @@ public static class WindowBounds {
 public static class Xna {
     public static GraphicsDevice GraphicsDevice;
     public static SpriteBatch SpriteBatch;
+    public static Random Rand = new Random();
+}
+
+public static class RandExtentions {
+    public static float RandomFloat(this Random rand, float min, float max) {
+        return rand.NextSingle() * (max - min) + min;
+    }
+
+    public static int RandomSign(this Random rand) {
+        return rand.Next(0, 2) == 0 ? -1 : 1;
+    }
 }
 
 public enum Side {

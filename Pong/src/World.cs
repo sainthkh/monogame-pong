@@ -8,17 +8,20 @@ namespace mg_pong;
 public class World: Scene {
 
     private Paddle2Player player;
+    private Paddle2Enemy enemy;
     private Ball2 ball;
 
     public override void Load()
     {
-        player = new Paddle2Player();
-
         LoadWalls();
 
         ball = new Ball2();
         ball.X = GameBounds.X / 2;
         ball.Y = GameBounds.Y / 2;
+
+        player = new Paddle2Player();
+        enemy = new Paddle2Enemy();
+        enemy.Ball = ball;
     }
 
     private void LoadWalls() {
@@ -47,6 +50,7 @@ public class World: Scene {
 
     private void MoveActors(float deltaTime) {
         player.Move(deltaTime);
+        enemy.Move(deltaTime);
         ball.Move(deltaTime);
     }
 
@@ -55,6 +59,10 @@ public class World: Scene {
 
         if(player.Collides(ball)) {
             CollisionManager.AddCollision(player, ball);
+        }
+
+        if(enemy.Collides(ball)) {
+            CollisionManager.AddCollision(enemy, ball);
         }
 
         CollisionManager.HandleCollisions(deltaTime);
@@ -67,6 +75,7 @@ public class World: Scene {
         Xna.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
         player.Render();
+        enemy.Render();
         ball.Render();
 
         Xna.SpriteBatch.End();
