@@ -22,6 +22,8 @@ public class World: Scene {
         player = new Paddle2Player();
         enemy = new Paddle2Enemy();
         enemy.Ball = ball;
+
+        BrickManager.Generate();
     }
 
     private void LoadWalls() {
@@ -65,6 +67,8 @@ public class World: Scene {
             CollisionManager.AddCollision(enemy, ball);
         }
 
+        BrickManager.CheckCollision(ball);
+
         CollisionManager.HandleCollisions(deltaTime);
     }
 
@@ -77,6 +81,8 @@ public class World: Scene {
         player.Render();
         enemy.Render();
         ball.Render();
+
+        BrickManager.Render();
 
         Xna.SpriteBatch.End();
     }

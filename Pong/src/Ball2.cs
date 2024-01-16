@@ -29,6 +29,7 @@ public class Ball2: Movable {
         Direction = new Vector2(0.1f, 1f);
         Bounds = new Rectangle(0, 0, BALL_SIZE, BALL_SIZE);
         Speed = 550.0f;
+        actorType = ActorType.Ball;
 
         cornerDegrees = MathUtil.CornerDegrees(Bounds);
     }
@@ -103,8 +104,8 @@ public class Ball2: Movable {
         }
         else if (other.Type == ActorType.Enemy) {
             // Roll back movement
-            X -= (int) (DirectionX * Speed * deltaTime * .6f);
-            Y -= (int) (DirectionY * Speed * deltaTime * .6f);
+            X -= (int) (DirectionX * Speed * deltaTime);
+            Y -= (int) (DirectionY * Speed * deltaTime);
 
             var enemy = (EnemySnapshot)other;
 
@@ -125,6 +126,25 @@ public class Ball2: Movable {
             }
             else if (side == Side.Left || side == Side.Right) {
                 Direction = -Direction;
+            }
+        }
+        else if (other.Type == ActorType.Brick) {
+            // Roll back movement
+            X -= (int) (DirectionX * Speed * deltaTime * .6f);
+            Y -= (int) (DirectionY * Speed * deltaTime * .6f);
+
+            var brick = (BrickSnapshot)other;
+
+            Vector2 vec = new Vector2(X - brick.X, Y - brick.Y);
+            vec.Normalize();
+            float degree = MathUtil.Degree(vec, new Vector2(0, 1));
+            Side side = MathUtil.GetSide(brick.CornerDegrees, degree);
+
+            if (side == Side.Top || side == Side.Bottom) {
+                DirectionY = -DirectionY;
+            }
+            else if (side == Side.Left || side == Side.Right) {
+                DirectionX = -DirectionX;
             }
         }
     }

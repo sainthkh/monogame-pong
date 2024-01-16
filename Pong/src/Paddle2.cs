@@ -55,7 +55,7 @@ public class Paddle2Player: Paddle2 {
     }
 
     public void Render() {
-        Draw.Rectangle(Bounds, Color.White);
+        Draw.Rectangle(Bounds, Color.Blue);
     }
 
     public void OnCollide(GameObject paddle, Solid solid) {
@@ -97,7 +97,7 @@ public class Paddle2Enemy: Paddle2 {
     }
 
     public void Render() {
-        Draw.Rectangle(Bounds, Color.White);
+        Draw.Rectangle(Bounds, Color.DarkRed);
     }
 
     public void OnCollide(GameObject paddle, Solid solid) {
