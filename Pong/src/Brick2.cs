@@ -136,6 +136,10 @@ public class Brick2: Actor {
         onHit = BrickOnHit.Create(this, BrickOnHitType.None);
     }
 
+    public Brick2(Rectangle bounds): this() {
+        Bounds = bounds;
+    }
+
     public override Snapshot Snapshot()
     {
         var snapshot = new BrickSnapshot(this);

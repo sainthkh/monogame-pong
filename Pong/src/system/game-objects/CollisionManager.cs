@@ -35,6 +35,6 @@ public static class CollisionManager {
     }
 
     private static void AddSnapshot(Actor actor) {
-        snapshots.Add(actor.Id, actor.Snapshot());
+        snapshots[actor.Id] = actor.Snapshot();
     }
 }
