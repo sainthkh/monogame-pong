@@ -7,17 +7,33 @@ public class BrickManager {
     public static List<Brick2> bricks = new List<Brick2>();
 
     public static void Generate() {
+        List<TetrisBrickGroup> tetrisBrickGroups = new List<TetrisBrickGroup>();
+
         for(int i = 0; i < 5; i++) {
-            var x = Xna.Rand.Next(0, GameBounds.X - 100);
-            var y = Xna.Rand.Next(100, GameBounds.Y - 100 - 100);
+            while(true) {
+                var tetris = new TetrisBrickGroup();
+                tetris.Generate();
 
-            var tetris = new TetrisBrickGroup();
+                var x = Xna.Rand.Next(0, GameBounds.X - tetris.Bounds.Width);
+                var y = Xna.Rand.Next(100, GameBounds.Y - 100 - tetris.Bounds.Height);
 
-            tetris.Generate();
-            tetris.Top = x;
-            tetris.Left = y;
+                tetris.Left = x;
+                tetris.Top = y;
 
-            bricks.AddRange(tetris.Bricks);
+                bool intersects = false;
+                foreach(var t in tetrisBrickGroups) {
+                    if (t.Bounds.Intersects(tetris.Bounds)) {
+                        intersects = true;
+                        break;
+                    }
+                }
+
+                if (!intersects) {
+                    tetrisBrickGroups.Add(tetris);
+                    bricks.AddRange(tetris.Bricks);
+                    break;
+                }
+            }
         }
     }
 

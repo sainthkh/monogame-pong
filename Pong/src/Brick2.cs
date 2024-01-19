@@ -133,7 +133,7 @@ public class Brick2: Actor {
         Color = Color.White;
         actorType = ActorType.Brick;
         move = BrickMove.Create(this, BrickMoveType.None);
-        onHit = BrickOnHit.Create(this, BrickOnHitType.None);
+        onHit = BrickOnHit.Create(this, BrickOnHitType.Break);
     }
 
     public Brick2(Rectangle bounds): this() {

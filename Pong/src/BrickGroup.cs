@@ -111,8 +111,6 @@ public class TetrisBrickGroup: BrickGroup {
             }
 
             var brick = new Brick2(new Rectangle(BRICK_SIZE * loc.X, BRICK_SIZE * (loc.Y + 1), BRICK_SIZE, BRICK_SIZE));
-            brick.OnHitType = BrickOnHitType.Break;
-
             Bricks.Add(brick);
             toplefts.Add(new Point(loc.X, loc.Y + 1));
             bottomrights.Add(new Point(loc.X + 1, loc.Y));
