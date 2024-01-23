@@ -11,6 +11,8 @@ public class World: Scene {
     private Paddle2Enemy enemy;
     private Ball2 ball;
 
+    private RenderTarget2D playArea;
+
     public override void Load()
     {
         LoadWalls();
@@ -24,6 +26,15 @@ public class World: Scene {
         enemy.Ball = ball;
 
         BrickManager.Generate();
+
+        playArea = new RenderTarget2D(
+            SharedResource.GraphicsDevice,
+            GameBounds.X,
+            GameBounds.Y,
+            false,
+            SharedResource.GraphicsDevice.PresentationParameters.BackBufferFormat,
+            DepthFormat.Depth24
+        );
     }
 
     private void LoadWalls() {
@@ -74,6 +85,23 @@ public class World: Scene {
 
     public override void Draw(GameTime gameTime)
     {
+        DrawToPlayArea();
+
+        Xna.GraphicsDevice.Clear(Color.Black);
+
+        Xna.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+
+        Render.Rectangle(new Rectangle(25, 25, GameBounds.X + 25 * 2, GameBounds.Y + 25 * 2), Color.White);
+        Xna.SpriteBatch.Draw(playArea, new Vector2(50, 50), Color.White);
+
+        DrawUI();
+
+        Xna.SpriteBatch.End();
+    }
+
+    private void DrawToPlayArea() 
+    {
+        Xna.GraphicsDevice.SetRenderTarget(playArea);
         Xna.GraphicsDevice.Clear(Color.Black);
 
         Xna.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
@@ -85,5 +113,12 @@ public class World: Scene {
         BrickManager.Render();
 
         Xna.SpriteBatch.End();
+
+        Xna.GraphicsDevice.SetRenderTarget(null);
+    }
+
+    private void DrawUI()
+    {
+
     }
 }

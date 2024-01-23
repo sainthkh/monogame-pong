@@ -156,7 +156,7 @@ public class Brick2: Actor {
         if (!IsAlive) {
             return;
         }
-        Draw.Rectangle(Bounds, Color);
+        mg_pong.Render.Rectangle(Bounds, Color);
     }
 
     public override void OnCollideActor(Snapshot other, float deltaTime)

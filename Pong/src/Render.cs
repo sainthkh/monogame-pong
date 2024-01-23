@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace mg_pong;
 
-public static class Draw {
+public static class Render {
     private static Texture2D Texture;
 
-    static Draw() {
+    static Render() {
         Texture = SharedResource.Texture;
     }
 
