@@ -32,6 +32,7 @@ public class Game1 : Game
         SharedResource.SpriteBatch = _spriteBatch;
         Xna.GraphicsDevice = GraphicsDevice;
         Xna.SpriteBatch = _spriteBatch;
+        Xna.Content = Content;
 
         font = Content.Load<SpriteFont>("Content/Score");
         resultMessageFont = Content.Load<SpriteFont>("Content/GameResult");

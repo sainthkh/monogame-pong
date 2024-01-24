@@ -119,6 +119,13 @@ public class World: Scene {
 
     private void DrawUI()
     {
+        Render.Text("Progress", new Vector2(650, 50), Color.White);
+
+        Render.Text("Point", new Vector2(650, 150), Color.White);
+
+        Render.Text("Life", new Vector2(650, 250), Color.White);
+
+        Render.Text("Items", new Vector2(650, 350), Color.White);
 
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace mg_pong;
@@ -18,6 +19,7 @@ public static class WindowBounds {
 public static class Xna {
     public static GraphicsDevice GraphicsDevice;
     public static SpriteBatch SpriteBatch;
+    public static ContentManager Content;
     public static Random Rand = new Random();
 }
 
