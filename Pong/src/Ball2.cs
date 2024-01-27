@@ -44,8 +44,8 @@ public class Ball2: Movable {
         MoveY(DirectionY * Speed * deltaTime, OnCollideSolid);
     }
 
-    public void Render() {
-        mg_pong.Render.Rectangle(Bounds, Color.YellowGreen);
+    public void Draw() {
+        Render.Rectangle(Bounds, Color.YellowGreen);
     }
 
     public void OnCollideSolid(GameObject paddle, Solid solid) {

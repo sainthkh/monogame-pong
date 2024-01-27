@@ -30,6 +30,10 @@ public class PlayerSnapshot: Snapshot {
 }
 
 public class Paddle2Player: Paddle2 {
+    private bool cooldown = false;
+    private float cooldownTimer = 0.0f;
+    private bool keyUp = true;
+
     public Paddle2Player(): base(GameBounds.Y - 80) {
         Speed = 250;
         actorType = ActorType.Player;
@@ -43,6 +47,30 @@ public class Paddle2Player: Paddle2 {
         return snapshot;
     }
 
+    public void UseItem(float deltaTime) {
+        KeyboardState keyboardState = Keyboard.GetState();
+        
+        if (keyboardState.IsKeyDown(Keys.A)) {
+            if (!cooldown && keyUp) {
+                Console.WriteLine("Use item");
+                cooldown = true;
+                keyUp = false;
+            }
+        }
+
+        if (cooldown) {
+            cooldownTimer += deltaTime;
+            if (cooldownTimer >= .3f) {
+                cooldown = false;
+                cooldownTimer = 0.0f;
+            }
+        }
+
+        if (keyboardState.IsKeyUp(Keys.A)) {
+            keyUp = true;
+        }
+    }
+
     public void Move(float deltaTime) {
         KeyboardState keyboardState = Keyboard.GetState();
         
@@ -54,8 +82,8 @@ public class Paddle2Player: Paddle2 {
         }
     }
 
-    public void Render() {
-        mg_pong.Render.Rectangle(Bounds, Color.Blue);
+    public void Draw() {
+        Render.Rectangle(Bounds, Color.Blue);
     }
 
     public void OnCollide(GameObject paddle, Solid solid) {
@@ -96,8 +124,8 @@ public class Paddle2Enemy: Paddle2 {
         }
     }
 
-    public void Render() {
-        mg_pong.Render.Rectangle(Bounds, Color.DarkRed);
+    public void Draw() {
+        Render.Rectangle(Bounds, Color.DarkRed);
     }
 
     public void OnCollide(GameObject paddle, Solid solid) {

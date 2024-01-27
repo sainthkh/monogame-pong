@@ -57,6 +57,7 @@ public class World: Scene {
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+        player.UseItem(deltaTime);
         MoveActors(deltaTime);
         HandleCollsions(deltaTime);
     }
@@ -65,6 +66,7 @@ public class World: Scene {
         player.Move(deltaTime);
         enemy.Move(deltaTime);
         ball.Move(deltaTime);
+        ItemManager.Move(deltaTime);
     }
 
     private void HandleCollsions(float deltaTime) {
@@ -106,11 +108,12 @@ public class World: Scene {
 
         Xna.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
-        player.Render();
-        enemy.Render();
-        ball.Render();
+        player.Draw();
+        enemy.Draw();
+        ball.Draw();
 
-        BrickManager.Render();
+        BrickManager.Draw();
+        ItemManager.Draw();
 
         Xna.SpriteBatch.End();
 

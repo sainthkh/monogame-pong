@@ -119,13 +119,14 @@ public class BrickManager {
         foreach(var brick in bricks) {
             if (brick.IsAlive && brick.Collides(ball)) {
                 CollisionManager.AddCollision(ball, brick);
+                break;
             }
         }
     }
 
-    public static void Render() {
+    public static void Draw() {
         foreach(var brick in bricks) {
-            brick.Render();
+            brick.Draw();
         }
     }
 

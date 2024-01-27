@@ -82,3 +82,12 @@ public static class MathUtil {
         return direction < 0 ? -1 : 1;
     }
 }
+
+public static class EnumUtil {
+    public static T Next<T>() where T : System.Enum {
+        var values = System.Enum.GetValues(typeof(T));
+        int val = Xna.Rand.Next(0, values.Length);
+
+        return (T)values.GetValue(val);
+    }
+}

@@ -96,7 +96,7 @@ public class BrickOnHitBreak: BrickOnHit {
     }
 
     public override void OnHit(Snapshot snapshot, float deltaTime) {
-        brick.IsAlive = false;
+        brick.Break(snapshot, deltaTime);
     }
 }
 
@@ -127,6 +127,9 @@ public class Brick2: Actor {
     public Color Color { get; set; }
     public bool IsAlive { get; set; }
 
+    public delegate void OnBreakEvent(Brick2 brick, Snapshot other, float deltaTime);
+    public event OnBreakEvent OnBreak;
+
     public Brick2() {
         cornerDegrees = MathUtil.CornerDegrees(Bounds);
         IsAlive = true;
@@ -152,11 +155,11 @@ public class Brick2: Actor {
         move.Move(deltaTime);
     }
 
-    public void Render() {
+    public void Draw() {
         if (!IsAlive) {
             return;
         }
-        mg_pong.Render.Rectangle(Bounds, Color);
+        Render.Rectangle(Bounds, Color);
     }
 
     public override void OnCollideActor(Snapshot other, float deltaTime)
@@ -164,5 +167,11 @@ public class Brick2: Actor {
         if (other.Type is ActorType.Ball) {
             onHit.OnHit(other, deltaTime);
         }
+    }
+
+    public void Break(Snapshot other, float deltaTime) {
+        IsAlive = false;
+        ItemManager.AddNew(X, Y);
+        OnBreak?.Invoke(this, other, deltaTime);
     }
 }
