@@ -34,6 +34,14 @@ public static class ItemRenderer {
     }
 }
 
+public class ItemSnapshot: Snapshot {
+    public ItemType ItemType { get; set; }
+
+    public ItemSnapshot(Item item): base(item) {
+        ItemType = item.ItemType;
+    }
+}
+
 public class Item: Actor {
     public float Speed { get; set; }
     public Vector2 Direction { get; set; }
@@ -42,6 +50,11 @@ public class Item: Actor {
 
     public Item() {
         Bounds = new Rectangle(0, 0, 20, 20);
+    }
+
+    public override Snapshot Snapshot()
+    {
+        return new ItemSnapshot(this);
     }
 
     public void Move(float deltaTime) {
@@ -54,17 +67,26 @@ public class Item: Actor {
     }
 
     public void OnCollideSolid(GameObject other, Solid solid) {
-        
+        if (solid is Wall) {
+            var wall = (Wall)solid;
+
+            if (wall.WallType == WallType.Bottom) {
+                ItemManager.ToBeRemoved(this);
+            }
+        }
     }
 
     public override void OnCollideActor(Snapshot other, float deltaTime)
     {
-        
+        if(other.Type == ActorType.Player) {
+            ItemManager.ToBeRemoved(this);
+        }
     }
 }
 
 public class ItemManager {
-    public static List<Item> items = new List<Item>();
+    private static List<Item> items = new List<Item>();
+    private static List<Item> itemsToRemove = new List<Item>();
 
     public static void AddNew(int x, int y) {
         var item = new Item();
@@ -77,6 +99,18 @@ public class ItemManager {
         items.Add(item);
     }
 
+    public static void ToBeRemoved(Item item) {
+        itemsToRemove.Add(item);
+    }
+
+    public static void Remove() {
+        foreach(var item in itemsToRemove) {
+            items.Remove(item);
+        }
+
+        itemsToRemove.Clear();
+    }
+
     public static void Move(float deltaTime) {
         foreach(var item in items) {
             item.Move(deltaTime);
@@ -86,6 +120,15 @@ public class ItemManager {
     public static void Draw() {
         foreach(var item in items) {
             item.Draw();
+        }
+    }
+
+    public static void CheckCollision(Paddle2Player player) {
+        foreach(var item in items) {
+            if (player.Collides(item)) {
+                CollisionManager.AddCollision(player, item);
+                break;
+            }
         }
     }
 }

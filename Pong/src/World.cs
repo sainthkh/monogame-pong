@@ -81,8 +81,11 @@ public class World: Scene {
         }
 
         BrickManager.CheckCollision(ball);
+        ItemManager.CheckCollision(player);
 
         CollisionManager.HandleCollisions(deltaTime);
+
+        ItemManager.Remove();
     }
 
     public override void Draw(GameTime gameTime)

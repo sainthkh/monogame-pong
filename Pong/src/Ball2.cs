@@ -54,17 +54,21 @@ public class Ball2: Movable {
 
             if (wall.WallType == WallType.Top) {
                 DirectionY = -DirectionY;
+                Y += 1;
                 HitTopWall?.Invoke(this);
             }
             else if (wall.WallType == WallType.Bottom) {
                 DirectionY = -DirectionY;
+                Y -= 1;
                 HitBottomWall?.Invoke(this);
             }
             else if (wall.WallType == WallType.Left) {
                 DirectionX = -DirectionX;
+                X += 1;
             }
             else if (wall.WallType == WallType.Right) {
                 DirectionX = -DirectionX;
+                X -= 1;
             }
         }
     }

@@ -81,6 +81,10 @@ public static class MathUtil {
     public static int Sign(float direction) {
         return direction < 0 ? -1 : 1;
     }
+
+    public static bool RandSuccess(int chance) {
+        return Xna.Rand.Next(0, 100) < chance;
+    }
 }
 
 public static class EnumUtil {

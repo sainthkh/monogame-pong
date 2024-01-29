@@ -33,6 +33,11 @@ public class Paddle2Player: Paddle2 {
     private bool cooldown = false;
     private float cooldownTimer = 0.0f;
     private bool keyUp = true;
+    private int maxItems = 2;
+    private List<ItemType> items = new List<ItemType>();
+
+    public int MaxItems { get { return maxItems; } }
+    public List<ItemType> Items { get { return items; } }
 
     public Paddle2Player(): base(GameBounds.Y - 80) {
         Speed = 250;
@@ -52,7 +57,12 @@ public class Paddle2Player: Paddle2 {
         
         if (keyboardState.IsKeyDown(Keys.A)) {
             if (!cooldown && keyUp) {
-                Console.WriteLine("Use item");
+                if (items.Count > 0) {
+                    var item = items[0];
+                    items.RemoveAt(0);
+                    
+                    ItemEffect.On(item);
+                }
                 cooldown = true;
                 keyUp = false;
             }
@@ -75,10 +85,10 @@ public class Paddle2Player: Paddle2 {
         KeyboardState keyboardState = Keyboard.GetState();
         
         if (keyboardState.IsKeyDown(Keys.Left)) {
-            MoveX(-Speed * deltaTime, OnCollide);
+            MoveX(-Speed * deltaTime, OnCollideSolid);
         }
         else if (keyboardState.IsKeyDown(Keys.Right)) {
-            MoveX(Speed * deltaTime, OnCollide);
+            MoveX(Speed * deltaTime, OnCollideSolid);
         }
     }
 
@@ -86,8 +96,19 @@ public class Paddle2Player: Paddle2 {
         Render.Rectangle(Bounds, Color.Blue);
     }
 
-    public void OnCollide(GameObject paddle, Solid solid) {
+    public void OnCollideSolid(GameObject paddle, Solid solid) {
 
+    }
+
+    public override void OnCollideActor(Snapshot other, float deltaTime)
+    {
+        if (other.Type == ActorType.Item) {
+            var item = (ItemSnapshot)other;
+
+            if (items.Count < maxItems) {
+                items.Add(item.ItemType);
+            }
+        }
     }
 }
 
