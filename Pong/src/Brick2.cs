@@ -172,7 +172,7 @@ public class Brick2: Actor {
     public void Break(Snapshot other, float deltaTime) {
         IsAlive = false;
 
-        if (MathUtil.RandSuccess(15)) {
+        if (MathUtil.RandSuccess(100)) {
             ItemManager.AddNew(X, Y);
         }
         OnBreak?.Invoke(this, other, deltaTime);

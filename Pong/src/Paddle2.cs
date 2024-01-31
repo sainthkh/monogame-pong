@@ -61,7 +61,7 @@ public class Paddle2Player: Paddle2 {
                     var item = items[0];
                     items.RemoveAt(0);
                     
-                    ItemEffect.On(item);
+                    ItemEffect.Activate(item);
                 }
                 cooldown = true;
                 keyUp = false;

@@ -42,14 +42,12 @@ public class ItemSnapshot: Snapshot {
     }
 }
 
-public class Item: Actor {
-    public float Speed { get; set; }
-    public Vector2 Direction { get; set; }
-
+public class Item: Movable {
     public ItemType ItemType { get; set; }
 
     public Item() {
         Bounds = new Rectangle(0, 0, 20, 20);
+        actorType = ActorType.Item;
     }
 
     public override Snapshot Snapshot()
@@ -134,34 +132,17 @@ public class ItemManager {
 }
 
 public static class ItemEffect {
-    public static Paddle2Player player;
-    public static Paddle2Enemy enemy;
-    public static Ball2 ball;
+    private static Dictionary<ItemType, int> charges = new Dictionary<ItemType, int>();
 
-    private static float ballSpeed;
-
-    public static void On(ItemType type) {
-        switch(type) {
-            case ItemType.SpeedUp:
-                SpeedUpOn();
-                break;
-        }
+    public static void Activate(ItemType type) {
+        charges[type] = 5;
     }
 
-    public static void Off(ItemType type) {
-        switch(type) {
-            case ItemType.SpeedUp:
-                SpeedUpOff();
-                break;
-        }
+    public static void UseCharge(ItemType type) {
+        charges[ItemType.SpeedUp] -= 1;
     }
 
-    private static void SpeedUpOn() {
-        ballSpeed = ball.Speed;
-        ball.Speed = ballSpeed * 1.5f;
-    }
-
-    private static void SpeedUpOff() {
-        ball.Speed = ballSpeed;     
+    public static bool HasCharge(ItemType type) {
+        return charges.ContainsKey(type) && charges[type] > 0;
     }
 }

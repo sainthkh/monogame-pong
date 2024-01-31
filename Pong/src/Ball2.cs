@@ -17,19 +17,23 @@ public class BallSnapshot: Snapshot {
 
 public class Ball2: Movable {
     public const int BALL_SIZE = 10;
+    public const float BALL_SPEED = 550.0f;
 
     public delegate void OnHitTopWall(Ball2 ball);
     public delegate void OnHitBottomWall(Ball2 ball);
     public event OnHitTopWall HitTopWall;
     public event OnHitBottomWall HitBottomWall;
 
+    public bool SpeedUp { get; set; }
+
     private List<float> cornerDegrees;
 
     public Ball2() {
         Direction = new Vector2(0.1f, 1f);
         Bounds = new Rectangle(0, 0, BALL_SIZE, BALL_SIZE);
-        Speed = 550.0f;
+        Speed = BALL_SPEED;
         actorType = ActorType.Ball;
+        SpeedUp = false;
 
         cornerDegrees = MathUtil.CornerDegrees(Bounds);
     }
@@ -56,6 +60,10 @@ public class Ball2: Movable {
                 DirectionY = -DirectionY;
                 Y += 1;
                 HitTopWall?.Invoke(this);
+
+                if (SpeedUp) {
+                    SpeedUpOff();
+                }
             }
             else if (wall.WallType == WallType.Bottom) {
                 DirectionY = -DirectionY;
@@ -75,6 +83,11 @@ public class Ball2: Movable {
 
     public override void OnCollideActor(Snapshot other, float deltaTime)
     {
+        ChangeDirection(other, deltaTime);
+        HandleItemEffect(other, deltaTime);
+    }
+
+    private void ChangeDirection(Snapshot other, float deltaTime) {
         if (other.Type == ActorType.Player) {
             // Roll back movement
             X -= (int) (DirectionX * Speed * deltaTime * .6f);
@@ -151,5 +164,27 @@ public class Ball2: Movable {
                 DirectionX = -DirectionX;
             }
         }
+    }
+
+    private void HandleItemEffect(Snapshot snapshot, float deltaTime) {
+        if (ItemEffect.HasCharge(ItemType.SpeedUp)) {
+            if (snapshot.Type == ActorType.Player) {
+                ItemEffect.UseCharge(ItemType.SpeedUp);
+                SpeedUpOn();
+            }
+            else if (snapshot.Type == ActorType.Enemy || snapshot.Type == ActorType.GuardBrick) {
+                SpeedUpOff();
+            }
+        }
+    }
+
+    private void SpeedUpOn() {
+        SpeedUp = true;
+        Speed = BALL_SPEED * Xna.Rand.RandomFloat(1.5f, 2.0f);
+    }
+
+    private void SpeedUpOff() {
+        SpeedUp = false;
+        Speed = BALL_SPEED;
     }
 }

@@ -8,5 +8,6 @@ public enum ActorType {
     Enemy,
     Ball,
     Brick,
+    GuardBrick,
     Item,
 }
