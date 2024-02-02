@@ -36,12 +36,15 @@ public class Paddle2Player: Paddle2 {
     private int maxItems = 2;
     private List<ItemType> items = new List<ItemType>();
 
+    public Color Color { get; set; }
+
     public int MaxItems { get { return maxItems; } }
     public List<ItemType> Items { get { return items; } }
 
     public Paddle2Player(): base(GameBounds.Y - 80) {
         Speed = 250;
         actorType = ActorType.Player;
+        Color = Color.Blue;
     }
 
     public override Snapshot Snapshot()
@@ -93,7 +96,7 @@ public class Paddle2Player: Paddle2 {
     }
 
     public void Draw() {
-        Render.Rectangle(Bounds, Color.Blue);
+        Render.Rectangle(Bounds, Color);
     }
 
     public void OnCollideSolid(GameObject paddle, Solid solid) {
@@ -119,11 +122,14 @@ public class EnemySnapshot: Snapshot {
 }
 
 public class Paddle2Enemy: Paddle2 {
+    public Color Color { get; set; }
     public Ball2 Ball { get; set; }
 
     public Paddle2Enemy(): base(80) {
         Speed = 250;
         actorType = ActorType.Enemy;
+
+        Color = Color.DarkRed;
     }
 
     public override Snapshot Snapshot()
@@ -146,7 +152,7 @@ public class Paddle2Enemy: Paddle2 {
     }
 
     public void Draw() {
-        Render.Rectangle(Bounds, Color.DarkRed);
+        Render.Rectangle(Bounds, Color);
     }
 
     public void OnCollide(GameObject paddle, Solid solid) {

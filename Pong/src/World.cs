@@ -11,6 +11,10 @@ public class World: Scene {
     private Paddle2Enemy enemy;
     private Ball2 ball;
 
+    private int enemyHP;
+    private int playerHP;
+    private int playerShield;
+
     private RenderTarget2D playArea;
 
     public override void Load()
@@ -25,6 +29,10 @@ public class World: Scene {
         enemy = new Paddle2Enemy();
         enemy.Ball = ball;
 
+        enemyHP = 5;
+        playerHP = 5;
+        playerShield = 0;
+
         BrickManager.Generate();
 
         playArea = new RenderTarget2D(
@@ -35,6 +43,14 @@ public class World: Scene {
             SharedResource.GraphicsDevice.PresentationParameters.BackBufferFormat,
             DepthFormat.Depth24
         );
+
+        ball.HitTopWall += (Ball2 ball) => {
+            enemyHP--;
+        };
+
+        ball.HitBottomWall += (Ball2 ball) => {
+            playerHP--;
+        };
     }
 
     private void LoadWalls() {
@@ -127,11 +143,19 @@ public class World: Scene {
     {
         Render.Text("Progress", new Vector2(650, 50), Color.White);
 
-        Render.Text("Point", new Vector2(650, 150), Color.White);
+        Render.Text("Enemy", new Vector2(650, 120), Color.White);
 
-        Render.Text("Life", new Vector2(650, 250), Color.White);
+        for (int i = 0; i < enemyHP; i++) {
+            Render.Rectangle(new Rectangle(750 + i * 20, 120, 10, 25), enemy.Color);
+        }
 
-        Render.Text("Items", new Vector2(650, 350), Color.White);
+        Render.Text("Player", new Vector2(650, 160), Color.White);
+
+        for (int i = 0; i < playerHP; i++) {
+            Render.Rectangle(new Rectangle(750 + i * 20, 160, 10, 25), player.Color);
+        }
+
+        Render.Text("Items", new Vector2(650, 230), Color.White);
 
     }
 }
