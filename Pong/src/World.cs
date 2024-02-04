@@ -11,6 +11,8 @@ public class World: Scene {
     private Paddle2Enemy enemy;
     private Ball2 ball;
 
+    private const int ENEMY_HP = 5;
+
     private int enemyHP;
     private int playerHP;
     private int playerShield;
@@ -29,11 +31,14 @@ public class World: Scene {
         enemy = new Paddle2Enemy();
         enemy.Ball = ball;
 
-        enemyHP = 5;
+        enemyHP = ENEMY_HP;
         playerHP = 5;
         playerShield = 0;
 
         BrickManager.Generate();
+        BrickManager.OnFinishRemove += () => {
+            enemyHP = ENEMY_HP;
+        };
 
         playArea = new RenderTarget2D(
             SharedResource.GraphicsDevice,
@@ -46,6 +51,10 @@ public class World: Scene {
 
         ball.HitTopWall += (Ball2 ball) => {
             enemyHP--;
+
+            if(enemyHP == 0) {
+                BrickManager.RemoveAll();
+            }
         };
 
         ball.HitBottomWall += (Ball2 ball) => {
@@ -82,6 +91,7 @@ public class World: Scene {
         player.Move(deltaTime);
         enemy.Move(deltaTime);
         ball.Move(deltaTime);
+        BrickManager.Move(deltaTime);
         ItemManager.Move(deltaTime);
     }
 

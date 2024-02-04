@@ -14,13 +14,51 @@ public enum BrickMoveType {
 
 public abstract class BrickMove {
     private Brick2 brick2;
+    private Vector2 removalDirection;
+    private bool isRemoving;
     public BrickMoveType MoveType { get; set; }
+    public bool IsRemoving { 
+        get {
+            return isRemoving;
+        } 
+        set {
+            isRemoving = value;
+
+            if (value) {
+                removalDirection = new Vector2(
+                    brick2.X - GameBounds.X / 2,
+                    brick2.Y - GameBounds.Y / 2
+                );
+
+                if (removalDirection.Length() < 0.1) {
+                    removalDirection = new Vector2(
+                        Xna.Rand.RandomFloat(-1, 1),
+                        Xna.Rand.RandomFloat(-1, 1)
+                    );
+                }
+
+                removalDirection.Normalize();
+            }
+
+        }
+    }
 
     public BrickMove(Brick2 brick) {
         brick2 = brick;
+        IsRemoving = false;
     }
 
-    public abstract void Move(float deltaTime);
+    public void Move(float deltaTime) {
+        if (IsRemoving) {
+            float speed = 300;
+
+            brick2.X += (int)(removalDirection.X * speed * deltaTime);
+            brick2.Y += (int)(removalDirection.Y * speed * deltaTime);
+        } else {
+            OwnMove(deltaTime);
+        }
+    }
+    public abstract void OwnMove(float deltaTime);
 
     public static BrickMove Create(Brick2 brick, BrickMoveType moveType) {
         switch (moveType) {
@@ -45,7 +83,7 @@ public class BrickMoveNone: BrickMove {
         MoveType = BrickMoveType.None;
     }
 
-    public override void Move(float deltaTime) {
+    public override void OwnMove(float deltaTime) {
         // Do nothing
     }
 }
@@ -126,6 +164,14 @@ public class Brick2: Actor {
     }
     public Color Color { get; set; }
     public bool IsAlive { get; set; }
+    public bool IsRemoving {
+        get {
+            return move.IsRemoving;
+        }
+        set {
+            move.IsRemoving = value;
+        }
+    }
 
     public delegate void OnBreakEvent(Brick2 brick, Snapshot other, float deltaTime);
     public event OnBreakEvent OnBreak;

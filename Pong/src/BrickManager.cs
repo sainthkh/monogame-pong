@@ -16,8 +16,15 @@ public enum BrickGenerationType {
     Tetris,
 }
 
-public class BrickManager {
+public static class BrickManager {
+    private static bool removeAll = false;
+    private static float removeAllTimer = 0.0f;
+    public static float removeAllTime = 4.0f;
+
     public static List<Brick2> bricks = new List<Brick2>();
+
+    public delegate void FinishRemove();
+    public static FinishRemove OnFinishRemove;
 
     public static void Generate() {
         BlockType blockType = (BlockType)Xna.Rand.Next(0, System.Enum.GetValues(typeof(BlockType)).Length);
@@ -115,7 +122,37 @@ public class BrickManager {
         }
     }
 
+    public static void RemoveAll() {
+        removeAll = true;
+
+        foreach(var brick in bricks) {
+            brick.IsRemoving = true;
+        }
+    }
+
+    public static void Move(float deltaTime) {
+        foreach(var brick in bricks) {
+            brick.Move(deltaTime);
+        }
+
+        if (removeAll) {
+            removeAllTimer += deltaTime;
+
+            if (removeAllTimer > removeAllTime) {
+                removeAll = false;
+                removeAllTimer = 0.0f;
+                bricks.Clear();
+                OnFinishRemove?.Invoke();
+                Generate();
+            }
+        }
+    }
+
     public static void CheckCollision(Ball2 ball) {
+        if (removeAll) {
+            return;
+        }
+
         foreach(var brick in bricks) {
             if (brick.IsAlive && brick.Collides(ball)) {
                 CollisionManager.AddCollision(ball, brick);
