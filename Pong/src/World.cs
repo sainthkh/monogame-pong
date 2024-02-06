@@ -36,6 +36,7 @@ public class World: Scene {
         playerShield = 0;
 
         BrickManager.Generate();
+        BrickManager.InitializeGuardBricks();
         BrickManager.OnFinishRemove += () => {
             enemyHP = ENEMY_HP;
         };

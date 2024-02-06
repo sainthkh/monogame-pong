@@ -22,6 +22,8 @@ public static class BrickManager {
     public static float removeAllTime = 4.0f;
 
     public static List<Brick2> bricks = new List<Brick2>();
+    public static List<Brick2> enemyGuardBricks = new List<Brick2>();
+    public static List<Brick2> playerGuardBricks = new List<Brick2>();
 
     public delegate void FinishRemove();
     public static FinishRemove OnFinishRemove;
@@ -149,6 +151,20 @@ public static class BrickManager {
     }
 
     public static void CheckCollision(Ball2 ball) {
+        foreach(var brick in enemyGuardBricks) {
+            if (brick.IsAlive && brick.Collides(ball)) {
+                CollisionManager.AddCollision(ball, brick);
+                break;
+            }
+        }
+
+        foreach(var brick in playerGuardBricks) {
+            if (brick.IsAlive && brick.Collides(ball)) {
+                CollisionManager.AddCollision(ball, brick);
+                break;
+            }
+        }
+
         if (removeAll) {
             return;
         }
@@ -165,6 +181,14 @@ public static class BrickManager {
         foreach(var brick in bricks) {
             brick.Draw();
         }
+
+        foreach(var brick in enemyGuardBricks) {
+            brick.Draw();
+        }
+
+        foreach(var brick in playerGuardBricks) {
+            brick.Draw();
+        }
     }
 
     public static Brick2 GenerateBrick(int x, int y, int width, int height, Color color, BrickMoveType moveType, BrickOnHitType onHitType) {
@@ -178,5 +202,24 @@ public static class BrickManager {
         brick.OnHitType = onHitType;
 
         return brick;
+    }
+
+    public static void InitializeGuardBricks() {
+        const int bricksPerRow = 6;
+        int brickWidth = GameBounds.X / bricksPerRow;
+
+        for (int i = 0; i < bricksPerRow; i++)
+        {
+            Brick2 brick = new GuardBrick(new Rectangle(i * brickWidth, 5, brickWidth, 10));
+            brick.Color = i % 2 == 0 ? Color.DarkGray : Color.Gray;
+            enemyGuardBricks.Add(brick);
+        }
+
+        for (int i = 0; i < bricksPerRow; i++)
+        {
+            Brick2 brick = new GuardBrick(new Rectangle(i * brickWidth, GameBounds.Y - 20, brickWidth, 10));
+            brick.Color = i % 2 == 1 ? Color.DarkGray : Color.Gray;
+            playerGuardBricks.Add(brick);
+        }
     }
 }

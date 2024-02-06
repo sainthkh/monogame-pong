@@ -224,3 +224,11 @@ public class Brick2: Actor {
         OnBreak?.Invoke(this, other, deltaTime);
     }
 }
+
+public class GuardBrick: Brick2 {
+    public GuardBrick(): base() {
+    }
+
+    public GuardBrick(Rectangle bounds): base(bounds) {
+    }
+}
