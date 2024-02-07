@@ -39,6 +39,10 @@ public class World: Scene {
         BrickManager.InitializeGuardBricks();
         BrickManager.OnFinishRemove += () => {
             enemyHP = ENEMY_HP;
+            playerHP += 2;
+
+            int remainder = BrickManager.RegeneratePlayerGuardBricks();
+            playerHP += remainder;
         };
 
         playArea = new RenderTarget2D(

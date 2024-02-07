@@ -222,4 +222,37 @@ public static class BrickManager {
             playerGuardBricks.Add(brick);
         }
     }
+
+    public static int RegeneratePlayerGuardBricks() {
+        int life = 2;
+
+        for(int i = 0; i < 2; i++) {
+            if(IsAllPlayerGuardBrickAlive()) {
+                break;
+            }
+            
+            life--;
+            bool success = false;
+            do {
+                int next = Xna.Rand.Next(0, playerGuardBricks.Count);
+                
+                if (!playerGuardBricks[next].IsAlive) {
+                    playerGuardBricks[next].IsAlive = true;
+                    success = true;
+                }
+            } while(success == false);
+        }
+        
+        return life;
+    }
+
+    public static bool IsAllPlayerGuardBrickAlive() {
+        foreach(var brick in playerGuardBricks) {
+            if (!brick.IsAlive) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
