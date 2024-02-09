@@ -22,8 +22,8 @@ public static class BrickManager {
     public static float removeAllTime = 4.0f;
 
     public static List<Brick2> bricks = new List<Brick2>();
-    public static List<Brick2> enemyGuardBricks = new List<Brick2>();
-    public static List<Brick2> playerGuardBricks = new List<Brick2>();
+    public static List<GuardBrick> enemyGuardBricks = new List<GuardBrick>();
+    public static List<GuardBrick> playerGuardBricks = new List<GuardBrick>();
 
     public delegate void FinishRemove();
     public static FinishRemove OnFinishRemove;
@@ -208,16 +208,21 @@ public static class BrickManager {
         const int bricksPerRow = 6;
         int brickWidth = GameBounds.X / bricksPerRow;
 
+        const float ENEMY_REGEN_TIME = 60.0f;
+        const float PLAYER_REGEN_TIME = 40.0f;
+
+        // Enemy guard bricks
         for (int i = 0; i < bricksPerRow; i++)
         {
-            Brick2 brick = new GuardBrick(new Rectangle(i * brickWidth, 5, brickWidth, 10));
+            GuardBrick brick = new GuardBrick(new Rectangle(i * brickWidth, 5, brickWidth, 10), ENEMY_REGEN_TIME);
             brick.Color = i % 2 == 0 ? Color.DarkGray : Color.Gray;
             enemyGuardBricks.Add(brick);
         }
 
+        // Player guard bricks
         for (int i = 0; i < bricksPerRow; i++)
         {
-            Brick2 brick = new GuardBrick(new Rectangle(i * brickWidth, GameBounds.Y - 20, brickWidth, 10));
+            GuardBrick brick = new GuardBrick(new Rectangle(i * brickWidth, GameBounds.Y - 20, brickWidth, 10), PLAYER_REGEN_TIME);
             brick.Color = i % 2 == 1 ? Color.DarkGray : Color.Gray;
             playerGuardBricks.Add(brick);
         }
@@ -230,7 +235,7 @@ public static class BrickManager {
             if(IsAllPlayerGuardBrickAlive()) {
                 break;
             }
-            
+
             life--;
             bool success = false;
             do {
@@ -246,7 +251,7 @@ public static class BrickManager {
         return life;
     }
 
-    public static bool IsAllPlayerGuardBrickAlive() {
+    private static bool IsAllPlayerGuardBrickAlive() {
         foreach(var brick in playerGuardBricks) {
             if (!brick.IsAlive) {
                 return false;
@@ -254,5 +259,15 @@ public static class BrickManager {
         }
 
         return true;
+    }
+
+    public static void RegenerateGuardBricks(float deltaTime) {
+        foreach(var brick in enemyGuardBricks) {
+            brick.Regenerate(deltaTime);
+        }
+
+        foreach(var brick in playerGuardBricks) {
+            brick.Regenerate(deltaTime);
+        }
     }
 }

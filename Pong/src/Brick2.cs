@@ -226,9 +226,67 @@ public class Brick2: Actor {
 }
 
 public class GuardBrick: Brick2 {
+    private float counter = 0;
+    private readonly float REGEN_TIME = 40;
+
     public GuardBrick(): base() {
     }
 
-    public GuardBrick(Rectangle bounds): base(bounds) {
+    public GuardBrick(Rectangle bounds, float regenTime): base(bounds) {
+        REGEN_TIME = regenTime;
+    }
+
+    public void Regenerate(float deltaTime) {
+        if (!IsAlive) {
+            counter += deltaTime;
+
+            if (counter > REGEN_TIME) {
+                IsAlive = true;
+                counter = 0;
+            }
+        }
+    }
+}
+
+public class PlayerGuardBrick: Brick2 {
+    private float counter = 0;
+    private const float REGEN_TIME = 40;
+    public PlayerGuardBrick(): base() {
+    }
+
+    public PlayerGuardBrick(Rectangle bounds): base(bounds) {
+    }
+
+    public void Regenerate(float deltaTime) {
+        if (!IsAlive) {
+            counter += deltaTime;
+
+            if (counter > REGEN_TIME) {
+                IsAlive = true;
+                counter = 0;
+            }
+        }
+    }
+}
+
+public class EnemyGuardBrick: Brick2 {
+    private float counter = 0;
+    private const float REGEN_TIME = 60;
+
+    public EnemyGuardBrick(): base() {
+    }
+
+    public EnemyGuardBrick(Rectangle bounds): base(bounds) {
+    }
+
+    public void Regenerate(float deltaTime) {
+        if (!IsAlive) {
+            counter += deltaTime;
+
+            if (counter > REGEN_TIME) {
+                IsAlive = true;
+                counter = 0;
+            }
+        }
     }
 }
