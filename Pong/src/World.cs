@@ -173,5 +173,25 @@ public class World: Scene {
 
         Render.Text("Items", new Vector2(650, 230), Color.White);
 
+        for (int i = 0; i < player.MaxItems; i++) {
+            Render.Rectangle(new Rectangle(650 + i * 50, 270, 36, 36), Color.White);
+            Render.Rectangle(new Rectangle(650 + i * 50 + 3, 270 + 3, 30, 30), Color.Black);
+        }
+
+        for (int i = 0; i < player.Items.Count; i++) {
+            var rect = new Rectangle(650 + i * 50 + 8, 270 + 8, 20, 20);
+            ItemRenderer.Draw(player.Items[i], rect);
+        }
+
+        for (int i = 0; i < ItemEffect.Activated.Count; i++) {
+            var itemType = ItemEffect.Activated[i];
+
+            var rect = new Rectangle(650, 320 + i * 35, 20, 20);
+            ItemRenderer.Draw(itemType, rect);
+
+            for (int j = 0; j < ItemEffect.Charges[itemType]; j++) {
+                Render.Rectangle(new Rectangle(650 + 30 + j * 20, 320 + i * 35, 10, 20), Color.White);
+            }
+        }
     }
 }

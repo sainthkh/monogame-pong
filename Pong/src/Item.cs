@@ -133,13 +133,30 @@ public class ItemManager {
 
 public static class ItemEffect {
     private static Dictionary<ItemType, int> charges = new Dictionary<ItemType, int>();
+    private static List<ItemType> activated = new List<ItemType>();
+
+    public static Dictionary<ItemType, int> Charges { get { return charges; } }
+    public static List<ItemType> Activated { get { return activated; } }
 
     public static void Activate(ItemType type) {
         charges[type] = 5;
+        
+        if (!activated.Contains(type)) {
+            activated.Add(type);   
+        }
+    }
+
+    public static void Unactivate(ItemType type) {
+        charges.Remove(type);
+        activated.Remove(type);
     }
 
     public static void UseCharge(ItemType type) {
-        charges[ItemType.SpeedUp] -= 1;
+        charges[type] -= 1;
+
+        if (charges[type] == 0) {
+            Unactivate(type);
+        }
     }
 
     public static bool HasCharge(ItemType type) {
