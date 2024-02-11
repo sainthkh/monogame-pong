@@ -104,6 +104,10 @@ public abstract class BrickOnHit {
         this.brick = brick2;
     }
 
+    public virtual void Update(float deltaTime) {
+    
+    }
+
     public abstract void OnHit(Snapshot snapshot, float deltaTime);
 
     public static BrickOnHit Create(Brick2 brick, BrickOnHitType onHitType) {
@@ -112,6 +116,8 @@ public abstract class BrickOnHit {
                 return new BrickOnHitNone(brick);
             case BrickOnHitType.Break:
                 return new BrickOnHitBreak(brick);
+            case BrickOnHitType.Revive:
+                return new BrickOnHitRevive(brick);
             default:
                 return new BrickOnHitNone(brick);
         }
@@ -135,6 +141,32 @@ public class BrickOnHitBreak: BrickOnHit {
 
     public override void OnHit(Snapshot snapshot, float deltaTime) {
         brick.Break(snapshot, deltaTime);
+    }
+}
+
+public class BrickOnHitRevive: BrickOnHit {
+    private float coolTime = 0;
+    private readonly float RESPAWN_TIME = 5;
+
+    public BrickOnHitRevive(Brick2 brick): base(brick) {
+        OnHitType = BrickOnHitType.Revive;
+    }
+
+    public override void Update(float deltaTime)
+    {
+        if(!brick.IsAlive) {
+            coolTime += deltaTime;
+
+            if(coolTime >= RESPAWN_TIME) {
+                brick.IsAlive = true;
+                coolTime = 0;
+            }
+        }
+    }
+
+    public override void OnHit(Snapshot snapshot, float deltaTime) {
+        brick.Break(snapshot, deltaTime);
+        BrickManager.AddUpdatableBrick(brick);
     }
 }
 
@@ -179,15 +211,27 @@ public class Brick2: Actor {
     public Brick2() {
         cornerDegrees = MathUtil.CornerDegrees(Bounds);
         IsAlive = true;
-        Color = Color.White;
+        var hitType = EnumUtil.Next<BrickOnHitType>();
+        Color = ColorByOnHitType(hitType);
         actorType = ActorType.Brick;
         move = BrickMove.Create(this, BrickMoveType.None);
-        onHit = BrickOnHit.Create(this, BrickOnHitType.Break);
+        onHit = BrickOnHit.Create(this, hitType);
     }
 
     public Brick2(Rectangle bounds): this() {
         Bounds = bounds;
     }
+
+    private Color ColorByOnHitType(BrickOnHitType hitType) {
+        switch (hitType) {
+            case BrickOnHitType.Break:
+                return Color.White;
+            case BrickOnHitType.Revive:
+                return Color.Yellow;
+            default:
+                return Color.Red;
+        }
+    } 
 
     public override Snapshot Snapshot()
     {
@@ -195,6 +239,10 @@ public class Brick2: Actor {
         snapshot.CornerDegrees = cornerDegrees;
 
         return snapshot;
+    }
+
+    public void Update(float deltaTime) {
+        onHit.Update(deltaTime);
     }
 
     public void Move(float deltaTime) {
@@ -234,49 +282,7 @@ public class GuardBrick: Brick2 {
 
     public GuardBrick(Rectangle bounds, float regenTime): base(bounds) {
         REGEN_TIME = regenTime;
-    }
-
-    public void Regenerate(float deltaTime) {
-        if (!IsAlive) {
-            counter += deltaTime;
-
-            if (counter > REGEN_TIME) {
-                IsAlive = true;
-                counter = 0;
-            }
-        }
-    }
-}
-
-public class PlayerGuardBrick: Brick2 {
-    private float counter = 0;
-    private const float REGEN_TIME = 40;
-    public PlayerGuardBrick(): base() {
-    }
-
-    public PlayerGuardBrick(Rectangle bounds): base(bounds) {
-    }
-
-    public void Regenerate(float deltaTime) {
-        if (!IsAlive) {
-            counter += deltaTime;
-
-            if (counter > REGEN_TIME) {
-                IsAlive = true;
-                counter = 0;
-            }
-        }
-    }
-}
-
-public class EnemyGuardBrick: Brick2 {
-    private float counter = 0;
-    private const float REGEN_TIME = 60;
-
-    public EnemyGuardBrick(): base() {
-    }
-
-    public EnemyGuardBrick(Rectangle bounds): base(bounds) {
+        OnHitType = BrickOnHitType.Break;
     }
 
     public void Regenerate(float deltaTime) {

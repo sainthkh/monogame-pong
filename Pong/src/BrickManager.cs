@@ -19,15 +19,23 @@ public enum BrickGenerationType {
 public static class BrickManager {
     private static bool removeAll = false;
     private static float removeAllTimer = 0.0f;
-    public static float removeAllTime = 4.0f;
+    private static float removeAllTime = 4.0f;
 
-    public static List<Brick2> bricks = new List<Brick2>();
-    public static List<GuardBrick> enemyGuardBricks = new List<GuardBrick>();
-    public static List<GuardBrick> playerGuardBricks = new List<GuardBrick>();
+    private static List<Brick2> bricks = new List<Brick2>();
+    private static List<GuardBrick> enemyGuardBricks = new List<GuardBrick>();
+    private static List<GuardBrick> playerGuardBricks = new List<GuardBrick>();
+    private static List<Brick2> updatableBricks = new List<Brick2>();
 
     public delegate void FinishRemove();
     public static FinishRemove OnFinishRemove;
 
+    public static void AddUpdatableBrick(Brick2 brick) {
+        if(!updatableBricks.Contains(brick)) {
+            updatableBricks.Add(brick);   
+        }
+    }
+
+    // Generate Bricks
     public static void Generate() {
         BlockType blockType = (BlockType)Xna.Rand.Next(0, System.Enum.GetValues(typeof(BlockType)).Length);
         var blockBounds = GetBlockBounds(blockType);
@@ -68,7 +76,7 @@ public static class BrickManager {
                 return new List<Rectangle>() { 
                     new Rectangle(0, padding, GameBounds.X / 2, GameBounds.Y - padding * 2),
                     new Rectangle(GameBounds.X / 2, padding, GameBounds.X / 2, GameBounds.Y - padding * 2),
-                };
+                    };
             case BlockType.Grid2x2:
                 return new List<Rectangle>() { 
                     new Rectangle(0, padding, GameBounds.X / 2, GameBounds.Y / 2 - padding),
@@ -124,11 +132,46 @@ public static class BrickManager {
         }
     }
 
+    public static Brick2 GenerateBrick(int x, int y, int width, int height, Color color, BrickMoveType moveType, BrickOnHitType onHitType) {
+        var brick = new Brick2();
+        brick.X = x;
+        brick.Y = y;
+        brick.Width = width;
+        brick.Height = height;
+        brick.Color = color;
+        brick.MoveType = moveType;
+        brick.OnHitType = onHitType;
+
+        return brick;
+    }
+
+    // Game Loop
+
     public static void RemoveAll() {
+        updatableBricks.Clear();
+
         removeAll = true;
 
         foreach(var brick in bricks) {
             brick.IsRemoving = true;
+        }
+    }
+
+    public static void UpdateBricks(float deltaTime) {
+        RegenerateBricks(deltaTime);
+
+        foreach(var brick in updatableBricks) {
+            brick.Update(deltaTime);
+        }
+    }
+
+    private static void RegenerateBricks(float deltaTime) {
+        foreach(var brick in enemyGuardBricks) {
+            brick.Regenerate(deltaTime);
+        }
+
+        foreach(var brick in playerGuardBricks) {
+            brick.Regenerate(deltaTime);
         }
     }
 
@@ -191,18 +234,7 @@ public static class BrickManager {
         }
     }
 
-    public static Brick2 GenerateBrick(int x, int y, int width, int height, Color color, BrickMoveType moveType, BrickOnHitType onHitType) {
-        var brick = new Brick2();
-        brick.X = x;
-        brick.Y = y;
-        brick.Width = width;
-        brick.Height = height;
-        brick.Color = color;
-        brick.MoveType = moveType;
-        brick.OnHitType = onHitType;
-
-        return brick;
-    }
+    // Guard Bricks
 
     public static void InitializeGuardBricks() {
         const int bricksPerRow = 6;
@@ -259,15 +291,5 @@ public static class BrickManager {
         }
 
         return true;
-    }
-
-    public static void RegenerateGuardBricks(float deltaTime) {
-        foreach(var brick in enemyGuardBricks) {
-            brick.Regenerate(deltaTime);
-        }
-
-        foreach(var brick in playerGuardBricks) {
-            brick.Regenerate(deltaTime);
-        }
     }
 }

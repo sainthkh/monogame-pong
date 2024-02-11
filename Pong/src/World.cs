@@ -88,7 +88,7 @@ public class World: Scene {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         player.UseItem(deltaTime);
-        BrickManager.RegenerateGuardBricks(deltaTime);
+        BrickManager.UpdateBricks(deltaTime);
         MoveActors(deltaTime);
         HandleCollsions(deltaTime);
     }
