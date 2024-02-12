@@ -94,4 +94,19 @@ public static class EnumUtil {
 
         return (T)values.GetValue(val);
     }
+
+    public static T Next<T>(List<(T, int)> probabilities) where T: System.Enum {
+        var r = Xna.Rand.Next(100);
+        var n = new List<int>();
+        int upper = 0;
+        foreach(var p in probabilities) {
+            upper += p.Item2;
+
+            if (r < upper) {
+                return p.Item1;
+            }
+        }
+
+        return probabilities[0].Item1;
+    }
 }

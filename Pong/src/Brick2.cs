@@ -211,7 +211,11 @@ public class Brick2: Actor {
     public Brick2() {
         cornerDegrees = MathUtil.CornerDegrees(Bounds);
         IsAlive = true;
-        var hitType = EnumUtil.Next<BrickOnHitType>();
+        var hitType = EnumUtil.Next<BrickOnHitType>(new List<(BrickOnHitType, int)>{
+            (BrickOnHitType.None, 5),
+            (BrickOnHitType.Revive, 10),
+            (BrickOnHitType.Break, 85),
+        });
         Color = ColorByOnHitType(hitType);
         actorType = ActorType.Brick;
         move = BrickMove.Create(this, BrickMoveType.None);
