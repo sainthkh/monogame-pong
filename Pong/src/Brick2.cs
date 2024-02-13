@@ -13,7 +13,7 @@ public enum BrickMoveType {
 }
 
 public abstract class BrickMove {
-    private Brick2 brick2;
+    protected Brick2 brick2;
     private Vector2 removalDirection;
     private bool isRemoving;
     public BrickMoveType MoveType { get; set; }
@@ -64,8 +64,8 @@ public abstract class BrickMove {
         switch (moveType) {
             case BrickMoveType.None:
                 return new BrickMoveNone(brick);
-            // case BrickMoveType.Circular:
-            //     return new BrickMoveCircular(brick);
+            case BrickMoveType.Circular:
+                return new BrickMoveCircular(brick);
             // case BrickMoveType.Rail:
             //     return new BrickMoveRail(brick);
             // case BrickMoveType.Rectangular:
@@ -85,6 +85,36 @@ public class BrickMoveNone: BrickMove {
 
     public override void OwnMove(float deltaTime) {
         // Do nothing
+    }
+}
+
+public class BrickMoveCircular: BrickMove {
+    private float degPerSec = 60;
+    
+    public float Rotation { get; set; }
+    public Point Pivot { get; set; }
+    public float Radius { get; set; }
+
+    public BrickMoveCircular(Brick2 brick): base(brick) {
+        MoveType = BrickMoveType.Circular;
+        degPerSec = Xna.Rand.RandomFloat(100, 200);
+        Rotation = Xna.Rand.RandomFloat(0, 360);
+        Pivot = new Point(
+            Xna.Rand.Next(0, GameBounds.X), 
+            Xna.Rand.Next(0, GameBounds.Y)
+        );
+        Radius = Xna.Rand.RandomFloat(80, 150);
+    }
+
+    public override void OwnMove(float deltaTime) {
+        brick2.X = (int)(Pivot.X + Math.Cos(Rotation * Math.PI / 180) * Radius);
+        brick2.Y = (int)(Pivot.Y + Math.Sin(Rotation * Math.PI / 180) * Radius);
+
+        Rotation += degPerSec * deltaTime;
+
+        if (Rotation >= 360) {
+            Rotation = 0;
+        }
     }
 }
 
@@ -218,7 +248,11 @@ public class Brick2: Actor {
         });
         Color = ColorByOnHitType(hitType);
         actorType = ActorType.Brick;
-        move = BrickMove.Create(this, BrickMoveType.None);
+        var moveType = EnumUtil.Next<BrickMoveType>(new List<(BrickMoveType, int)>{
+            (BrickMoveType.Circular, 10),
+            (BrickMoveType.None, 90),
+        });
+        move = BrickMove.Create(this, moveType);
         onHit = BrickOnHit.Create(this, hitType);
     }
 
