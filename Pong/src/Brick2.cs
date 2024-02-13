@@ -66,8 +66,8 @@ public abstract class BrickMove {
                 return new BrickMoveNone(brick);
             case BrickMoveType.Circular:
                 return new BrickMoveCircular(brick);
-            // case BrickMoveType.Rail:
-            //     return new BrickMoveRail(brick);
+            case BrickMoveType.Rail:
+                return new BrickMoveRail(brick);
             // case BrickMoveType.Rectangular:
             //     return new BrickMoveRectangular(brick);
             // case BrickMoveType.RandomAndStop:
@@ -114,6 +114,23 @@ public class BrickMoveCircular: BrickMove {
 
         if (Rotation >= 360) {
             Rotation = 0;
+        }
+    }
+}
+
+public class BrickMoveRail: BrickMove {
+    public float Speed { get; set; }
+
+    public BrickMoveRail(Brick2 brick): base(brick) {
+        MoveType = BrickMoveType.Rail;
+        Speed = Xna.Rand.RandomFloat(120, 240);
+    }
+
+    public override void OwnMove(float deltaTime) {
+        brick2.X += (int)(Speed * deltaTime);
+
+        if (brick2.X >= GameBounds.X + 30) {
+            brick2.X = 0;
         }
     }
 }
@@ -249,8 +266,9 @@ public class Brick2: Actor {
         Color = ColorByOnHitType(hitType);
         actorType = ActorType.Brick;
         var moveType = EnumUtil.Next<BrickMoveType>(new List<(BrickMoveType, int)>{
-            (BrickMoveType.Circular, 10),
-            (BrickMoveType.None, 90),
+            (BrickMoveType.Circular, 0),
+            (BrickMoveType.Rail, 100),
+            (BrickMoveType.None, 0),
         });
         move = BrickMove.Create(this, moveType);
         onHit = BrickOnHit.Create(this, hitType);
