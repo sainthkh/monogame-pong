@@ -7,7 +7,7 @@ namespace mg_pong;
 public enum BrickMoveType {
     None,
     Circular,
-    Rail,
+    Horizontal,
     Rectangular,
     RandomAndStop,
 }
@@ -66,8 +66,8 @@ public abstract class BrickMove {
                 return new BrickMoveNone(brick);
             case BrickMoveType.Circular:
                 return new BrickMoveCircular(brick);
-            case BrickMoveType.Rail:
-                return new BrickMoveRail(brick);
+            case BrickMoveType.Horizontal:
+                return new BrickMoveHorizontal(brick);
             // case BrickMoveType.Rectangular:
             //     return new BrickMoveRectangular(brick);
             // case BrickMoveType.RandomAndStop:
@@ -118,16 +118,18 @@ public class BrickMoveCircular: BrickMove {
     }
 }
 
-public class BrickMoveRail: BrickMove {
+public class BrickMoveHorizontal: BrickMove {
+    private int direction = 1;
     public float Speed { get; set; }
 
-    public BrickMoveRail(Brick2 brick): base(brick) {
-        MoveType = BrickMoveType.Rail;
+    public BrickMoveHorizontal(Brick2 brick): base(brick) {
+        MoveType = BrickMoveType.Horizontal;
         Speed = Xna.Rand.RandomFloat(120, 240);
+        direction = Xna.Rand.RandomSign();
     }
 
     public override void OwnMove(float deltaTime) {
-        brick2.X += (int)(Speed * deltaTime);
+        brick2.X += (int)(direction * Speed * deltaTime);
 
         if (brick2.X >= GameBounds.X + 30) {
             brick2.X = 0;
@@ -267,7 +269,7 @@ public class Brick2: Actor {
         actorType = ActorType.Brick;
         var moveType = EnumUtil.Next<BrickMoveType>(new List<(BrickMoveType, int)>{
             (BrickMoveType.Circular, 0),
-            (BrickMoveType.Rail, 100),
+            (BrickMoveType.Horizontal, 100),
             (BrickMoveType.None, 0),
         });
         move = BrickMove.Create(this, moveType);
