@@ -131,8 +131,11 @@ public class BrickMoveHorizontal: BrickMove {
     public override void OwnMove(float deltaTime) {
         brick2.X += (int)(direction * Speed * deltaTime);
 
-        if (brick2.X >= GameBounds.X + 30) {
+        if (direction > 0 && brick2.X >= GameBounds.X + 30) {
             brick2.X = 0;
+        }
+        else if (direction < 0 && brick2.X <= 0) {
+            brick2.X = GameBounds.X + 30;
         }
     }
 }
