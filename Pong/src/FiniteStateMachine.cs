@@ -5,18 +5,18 @@ using Microsoft.Xna.Framework;
 namespace mg_pong;
 
 public class FiniteStateMachine<T> {
-    public Dictionary<T, Action<GameTime>> States { get; set; }
+    public Dictionary<T, Action<float>> States { get; set; }
     public T CurrentState { get; set; }
 
     public FiniteStateMachine() {
-        States = new Dictionary<T, Action<GameTime>>();
+        States = new Dictionary<T, Action<float>>();
     }
 
-    public void AddState(T name, Action<GameTime> update) {
+    public void AddState(T name, Action<float> update) {
         States.Add(name, update);
     }
 
-    public void Update(GameTime gameTime) {
-        States[CurrentState](gameTime);
+    public void Update(float deltaTime) {
+        States[CurrentState](deltaTime);
     }
 }

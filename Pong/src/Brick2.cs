@@ -8,6 +8,7 @@ public enum BrickMoveType {
     None,
     Circular,
     Horizontal,
+    InOut,
     Rectangular,
     RandomAndStop,
 }
@@ -68,6 +69,8 @@ public abstract class BrickMove {
                 return new BrickMoveCircular(brick);
             case BrickMoveType.Horizontal:
                 return new BrickMoveHorizontal(brick);
+            case BrickMoveType.InOut:
+                return new BrickMoveInOut(brick);
             // case BrickMoveType.Rectangular:
             //     return new BrickMoveRectangular(brick);
             // case BrickMoveType.RandomAndStop:
@@ -137,6 +140,89 @@ public class BrickMoveHorizontal: BrickMove {
         else if (direction < 0 && brick2.X <= 0) {
             brick2.X = GameBounds.X + 30;
         }
+    }
+}
+
+enum BrickMoveInOutState {
+    Stop,
+    Expand,
+    Shrink,
+}
+
+public class BrickMoveInOut: BrickMove {
+    public float ShortRadius { get; set; }
+    public float LongRadius { get; set; }
+    public float Interval { get; set; }
+    private float currentRadius;
+    private float speed;
+    public Point Pivot { get; set; }
+    public float Angle { get; set; }
+
+    public float ElapsedTime { get; set; }
+
+    private FiniteStateMachine<BrickMoveInOutState> fsm;
+
+    public BrickMoveInOut(Brick2 brick): base(brick) {
+        MoveType = BrickMoveType.InOut;
+
+        Interval = Xna.Rand.RandomFloat(2, 5);
+        ShortRadius = Xna.Rand.RandomFloat(10, 40);
+        LongRadius = Xna.Rand.RandomFloat(40, 140);
+        Pivot = new Point(
+            Xna.Rand.Next(0, GameBounds.X), 
+            Xna.Rand.Next(0, GameBounds.Y)
+        );
+        Angle = Xna.Rand.RandomFloat(0, 360);
+        speed = (LongRadius - ShortRadius) / Interval;
+        currentRadius = LongRadius;
+
+        brick2.X = (int)(Pivot.X + Math.Cos(Angle * Math.PI / 180) * currentRadius);
+        brick2.Y = (int)(Pivot.Y + Math.Sin(Angle * Math.PI / 180) * currentRadius);
+
+        fsm = new FiniteStateMachine<BrickMoveInOutState>();
+        fsm.CurrentState = BrickMoveInOutState.Stop;
+
+        fsm.AddState(BrickMoveInOutState.Stop, (deltaTime) => {
+            ElapsedTime += (float)deltaTime;
+
+            if (ElapsedTime >= Interval) {
+                ElapsedTime = 0;
+
+                if (Math.Abs(currentRadius - ShortRadius) < 0.1f) {
+                    fsm.CurrentState = BrickMoveInOutState.Expand;
+                } else {
+                    fsm.CurrentState = BrickMoveInOutState.Shrink;
+                }
+            }
+        });
+
+        fsm.AddState(BrickMoveInOutState.Expand, (deltaTime) => {
+            currentRadius += speed * (float)deltaTime;
+
+            brick2.X = (int)(Pivot.X + Math.Cos(Angle * Math.PI / 180) * currentRadius);
+            brick2.Y = (int)(Pivot.Y + Math.Sin(Angle * Math.PI / 180) * currentRadius);
+
+            if (currentRadius >= LongRadius) {
+                currentRadius = LongRadius;
+                fsm.CurrentState = BrickMoveInOutState.Stop;
+            }
+        });
+
+        fsm.AddState(BrickMoveInOutState.Shrink, (deltaTime) => {
+            currentRadius -= speed * (float)deltaTime;
+
+            brick2.X = (int)(Pivot.X + Math.Cos(Angle * Math.PI / 180) * currentRadius);
+            brick2.Y = (int)(Pivot.Y + Math.Sin(Angle * Math.PI / 180) * currentRadius);
+
+            if (currentRadius <= ShortRadius) {
+                currentRadius = ShortRadius;
+                fsm.CurrentState = BrickMoveInOutState.Stop;
+            }
+        });
+    }
+
+    public override void OwnMove(float deltaTime) {
+        fsm.Update(deltaTime);
     }
 }
 
@@ -271,9 +357,10 @@ public class Brick2: Actor {
         Color = ColorByOnHitType(hitType);
         actorType = ActorType.Brick;
         var moveType = EnumUtil.Next<BrickMoveType>(new List<(BrickMoveType, int)>{
-            (BrickMoveType.Circular, 0),
-            (BrickMoveType.Horizontal, 100),
-            (BrickMoveType.None, 0),
+            (BrickMoveType.Circular, 10),
+            (BrickMoveType.Horizontal, 10),
+            (BrickMoveType.InOut, 10),
+            (BrickMoveType.None, 70),
         });
         move = BrickMove.Create(this, moveType);
         onHit = BrickOnHit.Create(this, hitType);
