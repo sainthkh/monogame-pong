@@ -19,6 +19,8 @@ public class World: Scene {
 
     private RenderTarget2D playArea;
 
+    private int progress = 1;
+
     public override void Load()
     {
         LoadWalls();
@@ -43,6 +45,8 @@ public class World: Scene {
 
             int remainder = BrickManager.RegeneratePlayerGuardBricks();
             playerHP += remainder;
+
+            progress++;
         };
 
         playArea = new RenderTarget2D(
@@ -158,6 +162,7 @@ public class World: Scene {
     private void DrawUI()
     {
         Render.Text("Progress", new Vector2(650, 50), Color.White);
+        Render.Text($"{progress}/100", new Vector2(900, 50), Color.White);
 
         Render.Text("Enemy", new Vector2(650, 120), Color.White);
 
