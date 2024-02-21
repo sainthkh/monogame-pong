@@ -332,6 +332,7 @@ public class Brick2: Actor {
             onHit = BrickOnHit.Create(this, value);
         }
     }
+    public BrickMove BrickMove { get { return move; } }
     public Color Color { get; set; }
     public bool IsAlive { get; set; }
     public bool IsRemoving {

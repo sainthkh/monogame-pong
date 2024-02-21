@@ -1,7 +1,13 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace mg_pong;
+
+public enum ArrangementType {
+    RandomGrid,
+    BricksMovingInCircle,
+}
 
 public enum BlockType {
     Whole,
@@ -37,6 +43,19 @@ public static class BrickManager {
 
     // Generate Bricks
     public static void Generate() {
+        ArrangementType arrangementType = (ArrangementType)Xna.Rand.Next(0, System.Enum.GetValues(typeof(ArrangementType)).Length);
+
+        switch(arrangementType) {
+            case ArrangementType.RandomGrid:
+                GenerateGridedRandom();
+                break;
+            case ArrangementType.BricksMovingInCircle:
+                GenerateBricksMovingInCircle();
+                break;
+        }
+    }
+
+    public static void GenerateGridedRandom() {
         BlockType blockType = (BlockType)Xna.Rand.Next(0, System.Enum.GetValues(typeof(BlockType)).Length);
         var blockBounds = GetBlockBounds(blockType);
 
@@ -130,6 +149,29 @@ public static class BrickManager {
 
             bricks.Add(brick);
         }
+    }
+
+    public static void GenerateBricksMovingInCircle() {
+        int numBricks = 12;
+
+        for(int i = 0; i < numBricks; i++) {
+            var brick = new Brick2();
+            brick.Width = 15;
+            brick.Height = 15;
+            brick.MoveType = BrickMoveType.Circular;
+
+            var move = (BrickMoveCircular)brick.BrickMove;
+
+            move.Pivot = new Point(GameBounds.X / 2, GameBounds.Y / 2);
+            move.Radius = 100;
+            move.Rotation = 360 / numBricks * i;
+
+            bricks.Add(brick);
+        }
+    }
+
+    public static void GenerateBricksMovingInAndOut(Rectangle bounds) {
+
     }
 
     public static Brick2 GenerateBrick(int x, int y, int width, int height, Color color, BrickMoveType moveType, BrickOnHitType onHitType) {
