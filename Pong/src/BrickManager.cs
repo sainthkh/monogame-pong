@@ -6,7 +6,8 @@ namespace mg_pong;
 
 public enum ArrangementType {
     RandomGrid,
-    BricksMovingInCircle,
+    MovingInCircle,
+    InRows,
 }
 
 public enum BlockType {
@@ -49,8 +50,11 @@ public static class BrickManager {
             case ArrangementType.RandomGrid:
                 GenerateGridedRandom();
                 break;
-            case ArrangementType.BricksMovingInCircle:
+            case ArrangementType.MovingInCircle:
                 GenerateBricksMovingInCircle();
+                break;
+            case ArrangementType.InRows:
+                GenerateBricksInRows();
                 break;
         }
     }
@@ -172,6 +176,52 @@ public static class BrickManager {
 
     public static void GenerateBricksMovingInAndOut(Rectangle bounds) {
 
+    }
+
+    public static void GenerateBricksInRows() {
+        List<Point> startingPoints = new List<Point>() {
+            new Point(80, 100),
+            new Point(150, 250),
+            new Point(80, 400),
+            new Point(150, 550),
+        };
+
+        List<Point> points = new List<Point>();
+
+        foreach(Point startingPoint in startingPoints) {
+            int x = startingPoint.X;
+            int y = startingPoint.Y;
+
+            points.Add(new Point(x, y));
+
+            for(int i = 0; i < 6; i++) {
+                points.Add(new Point(x + 45 * (i + 1), y));
+            }
+        }
+
+        int brickIndex = 0;
+
+        foreach(Point point in points) {
+            List<Point> p = new List<Point>();
+
+            Brick2 brick = new Brick2();
+            brick.X = point.X;
+            brick.Y = point.Y;
+            brick.Width = 15;
+            brick.Height = 15;
+            brick.MoveType = BrickMoveType.None;
+            
+            if (brickIndex % 3 == 0) {
+                brick.OnHitType = BrickOnHitType.Revive;
+            }
+            else {
+                brick.OnHitType = BrickOnHitType.Break;
+            }
+
+            bricks.Add(brick);
+
+            brickIndex++;
+        }
     }
 
     public static Brick2 GenerateBrick(int x, int y, int width, int height, Color color, BrickMoveType moveType, BrickOnHitType onHitType) {
