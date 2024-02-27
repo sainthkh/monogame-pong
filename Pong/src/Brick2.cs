@@ -256,6 +256,8 @@ public abstract class BrickOnHit {
                 return new BrickOnHitBreak(brick);
             case BrickOnHitType.Revive:
                 return new BrickOnHitRevive(brick);
+            case BrickOnHitType.Generate:
+                return new BrickOnHitGenerate(brick);
             default:
                 return new BrickOnHitNone(brick);
         }
@@ -308,6 +310,110 @@ public class BrickOnHitRevive: BrickOnHit {
     }
 }
 
+public enum BrickOnHitGenerateType {
+    Horizontal,
+    Vertical,
+    Round,
+    Random,
+}
+
+public class BrickOnHitGenerate: BrickOnHit {
+    private List<Brick2> ToBeGenerated { get; set; }
+    private BrickOnHitGenerateType GenerateType { get; set; }
+
+    public BrickOnHitGenerate(Brick2 brick): base(brick) {
+        OnHitType = BrickOnHitType.Generate;
+        ToBeGenerated = new List<Brick2>();
+        GenerateType = EnumUtil.Next<BrickOnHitGenerateType>();
+    }
+
+    public void AddBricks() {
+        if (GenerateType == BrickOnHitGenerateType.Horizontal) {
+            var list = new List<int> {
+                brick.X - 60,
+                brick.X - 30,
+                brick.X + 30,
+                brick.X + 60,
+            };
+
+            foreach (var x in list) {
+                var newBrick = new Brick2(new Rectangle(x, brick.Y, 15, 15));
+                newBrick.MoveType = BrickMoveType.None;
+                newBrick.OnHitType = EnumUtil.Next<BrickOnHitType>();
+
+                BrickManager.AddBrick(newBrick);
+            }
+        }
+        else if (GenerateType == BrickOnHitGenerateType.Vertical) {
+            var list = new List<int> {
+                brick.Y - 60,
+                brick.Y - 30,
+                brick.Y + 30,
+                brick.Y + 60,
+            };
+
+            foreach (var y in list) {
+                var newBrick = new Brick2(new Rectangle(brick.X, y, 15, 15));
+                newBrick.MoveType = BrickMoveType.None;
+                newBrick.OnHitType = EnumUtil.Next<BrickOnHitType>();
+
+                BrickManager.AddBrick(newBrick);
+            }
+        }
+        else if (GenerateType == BrickOnHitGenerateType.Round) {
+            var list = new List<float> {
+                0,
+                90,
+                180,
+                270,
+            };
+
+            foreach (var degree in list) {
+                var newBrick = new Brick2(new Rectangle(
+                    (int)(brick.X + 60 * Math.Cos(degree * Math.PI / 180)),
+                    (int)(brick.Y + 60 * Math.Sin(degree * Math.PI / 180)),
+                    15, 15
+                ));
+                newBrick.MoveType = BrickMoveType.None;
+                newBrick.OnHitType = EnumUtil.Next<BrickOnHitType>();
+
+                BrickManager.AddBrick(newBrick);
+            }
+        }
+        else if (GenerateType == BrickOnHitGenerateType.Random) {
+            var list = new List<float> ();
+
+            for (int i = 0; i < 4; i++) {
+                list.Add(Xna.Rand.RandomFloat(0, 360));
+            }
+
+            foreach (var degree in list) {
+                var r = Xna.Rand.RandomFloat(30, 80);
+                var newBrick = new Brick2(new Rectangle(
+                    (int)(brick.X + r * Math.Cos(degree * Math.PI / 180)),
+                    (int)(brick.Y + r * Math.Sin(degree * Math.PI / 180)),
+                    15, 15
+                ));
+                newBrick.MoveType = BrickMoveType.None;
+                newBrick.OnHitType = EnumUtil.Next<BrickOnHitType>();
+
+                BrickManager.AddBrick(newBrick);
+            }
+        }
+    }
+
+    public void AddBrickToBeGenerated(Brick2 brick) {
+        brick.IsAlive = false;
+        ToBeGenerated.Add(brick);
+    }
+
+    public override void OnHit(Snapshot snapshot, float deltaTime) {
+        brick.Break(snapshot, deltaTime);
+
+        AddBricks();
+    }
+}
+
 public class BrickSnapshot: Snapshot {
     public List<float> CornerDegrees;
 
@@ -333,6 +439,7 @@ public class Brick2: Actor {
         }
     }
     public BrickMove BrickMove { get { return move; } }
+    public BrickOnHit BrickOnHit { get { return onHit; } }
     public Color Color { get; set; }
     public bool IsAlive { get; set; }
     public bool IsRemoving {
@@ -353,7 +460,8 @@ public class Brick2: Actor {
         var hitType = EnumUtil.Next<BrickOnHitType>(new List<(BrickOnHitType, int)>{
             (BrickOnHitType.None, 5),
             (BrickOnHitType.Revive, 10),
-            (BrickOnHitType.Break, 85),
+            (BrickOnHitType.Generate, 5),
+            (BrickOnHitType.Break, 80),
         });
         Color = ColorByOnHitType(hitType);
         actorType = ActorType.Brick;
@@ -377,10 +485,12 @@ public class Brick2: Actor {
                 return Color.White;
             case BrickOnHitType.Revive:
                 return Color.Yellow;
+            case BrickOnHitType.Generate:
+                return Color.Purple;
             default:
                 return Color.Red;
         }
-    } 
+    }
 
     public override Snapshot Snapshot()
     {

@@ -36,6 +36,10 @@ public static class BrickManager {
     public delegate void FinishRemove();
     public static FinishRemove OnFinishRemove;
 
+    public static void AddBrick(Brick2 brick) {
+        bricks.Add(brick);
+    }
+
     public static void AddUpdatableBrick(Brick2 brick) {
         if(!updatableBricks.Contains(brick)) {
             updatableBricks.Add(brick);   
@@ -149,7 +153,7 @@ public static class BrickManager {
             var height = Xna.Rand.Next(10, 30);
             var x = Xna.Rand.Next(bounds.X, bounds.X + bounds.Width - width);
             var y = Xna.Rand.Next(bounds.Y, bounds.Y + bounds.Height - height);
-            var brick = GenerateBrick(x, y, width, height, Color.White, BrickMoveType.None, BrickOnHitType.Break);
+            var brick = GenerateBrick(x, y, width, height);
 
             bricks.Add(brick);
         }
@@ -204,19 +208,9 @@ public static class BrickManager {
         foreach(Point point in points) {
             List<Point> p = new List<Point>();
 
-            Brick2 brick = new Brick2();
-            brick.X = point.X;
-            brick.Y = point.Y;
-            brick.Width = 15;
-            brick.Height = 15;
-            brick.MoveType = BrickMoveType.None;
-            
-            if (brickIndex % 3 == 0) {
-                brick.OnHitType = BrickOnHitType.Revive;
-            }
-            else {
-                brick.OnHitType = BrickOnHitType.Break;
-            }
+            var hitType = brickIndex % 3 == 0 ? BrickOnHitType.Revive : BrickOnHitType.Break;
+
+            Brick2 brick = GenerateBrick(point.X, point.Y, 15, 15, BrickMoveType.None, hitType);
 
             bricks.Add(brick);
 
@@ -224,15 +218,29 @@ public static class BrickManager {
         }
     }
 
-    public static Brick2 GenerateBrick(int x, int y, int width, int height, Color color, BrickMoveType moveType, BrickOnHitType onHitType) {
+    public static Brick2 GenerateBrick(int x, int y, int width, int height) {
         var brick = new Brick2();
         brick.X = x;
         brick.Y = y;
         brick.Width = width;
         brick.Height = height;
-        brick.Color = color;
+
+        return brick;
+    }
+
+    public static Brick2 GenerateBrick(int x, int y, int width, int height, BrickMoveType moveType, BrickOnHitType onHitType) {
+        var brick = new Brick2();
+        brick.X = x;
+        brick.Y = y;
+        brick.Width = width;
+        brick.Height = height;
         brick.MoveType = moveType;
         brick.OnHitType = onHitType;
+
+        if (onHitType == BrickOnHitType.Generate) {
+            var hitType = (BrickOnHitGenerate) brick.BrickOnHit;
+            hitType.AddBricks();
+        }
 
         return brick;
     }
