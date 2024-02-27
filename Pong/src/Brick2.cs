@@ -162,17 +162,7 @@ public class BrickMoveInOut: BrickMove {
 
     private FiniteStateMachine<BrickMoveInOutState> fsm;
 
-    public BrickMoveInOut(Brick2 brick): base(brick) {
-        MoveType = BrickMoveType.InOut;
-
-        Interval = Xna.Rand.RandomFloat(2, 5);
-        ShortRadius = Xna.Rand.RandomFloat(10, 40);
-        LongRadius = Xna.Rand.RandomFloat(40, 140);
-        Pivot = new Point(
-            Xna.Rand.Next(0, GameBounds.X), 
-            Xna.Rand.Next(0, GameBounds.Y)
-        );
-        Angle = Xna.Rand.RandomFloat(0, 360);
+    public void Initialize() {
         speed = (LongRadius - ShortRadius) / Interval;
         currentRadius = LongRadius;
 
@@ -219,6 +209,21 @@ public class BrickMoveInOut: BrickMove {
                 fsm.CurrentState = BrickMoveInOutState.Stop;
             }
         });
+    }
+
+    public BrickMoveInOut(Brick2 brick): base(brick) {
+        MoveType = BrickMoveType.InOut;
+
+        Interval = Xna.Rand.RandomFloat(2, 5);
+        ShortRadius = Xna.Rand.RandomFloat(10, 40);
+        LongRadius = Xna.Rand.RandomFloat(40, 140);
+        Pivot = new Point(
+            Xna.Rand.Next(0, GameBounds.X), 
+            Xna.Rand.Next(0, GameBounds.Y)
+        );
+        Angle = Xna.Rand.RandomFloat(0, 360);
+
+        Initialize();
     }
 
     public override void OwnMove(float deltaTime) {

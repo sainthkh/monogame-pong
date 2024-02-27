@@ -7,6 +7,7 @@ namespace mg_pong;
 public enum ArrangementType {
     RandomGrid,
     MovingInCircle,
+    InOut,
     InRows,
 }
 
@@ -59,6 +60,9 @@ public static class BrickManager {
                 break;
             case ArrangementType.InRows:
                 GenerateBricksInRows();
+                break;
+            case ArrangementType.InOut:
+                GenerateBricksMovingInAndOut();
                 break;
         }
     }
@@ -178,8 +182,47 @@ public static class BrickManager {
         }
     }
 
-    public static void GenerateBricksMovingInAndOut(Rectangle bounds) {
+    public static void GenerateBricksMovingInAndOut() {
+        Point pivot = new Point(
+            GameBounds.X / 2,
+            GameBounds.Y / 2
+        );
+        int[] vars = new int[] { 10, 40 };
+        int[] vars2 = new int[] { 40, 140 };
 
+        for(int i = 0; i < 10; i++) {
+            var brick = new Brick2();
+            brick.Width = 15;
+            brick.Height = 15;
+            brick.MoveType = BrickMoveType.InOut;
+
+            var move = (BrickMoveInOut)brick.BrickMove;
+            move.Pivot = pivot;
+            move.ShortRadius = vars[0];
+            move.LongRadius = vars[1];
+            move.Angle = 36 * i;
+            move.Interval = 3;
+            move.Initialize();
+            
+            bricks.Add(brick);
+        }
+
+        for(int i = 0; i < 10; i++) {
+            var brick = new Brick2();
+            brick.Width = 15;
+            brick.Height = 15;
+            brick.MoveType = BrickMoveType.InOut;
+
+            var move = (BrickMoveInOut)brick.BrickMove;
+            move.Pivot = pivot;
+            move.ShortRadius = vars2[0];
+            move.LongRadius = vars2[1];
+            move.Angle = 36 * i;
+            move.Interval = 3;
+            move.Initialize();
+            
+            bricks.Add(brick);
+        }
     }
 
     public static void GenerateBricksInRows() {
